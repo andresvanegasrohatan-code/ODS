@@ -11,6 +11,9 @@ const { noEncontrado, manejarErrores } = require('./middleware/errorHandler');
 
 const app = express();
 
+// Detrás del proxy de Vercel/Render: necesario para el limitador de peticiones
+app.set('trust proxy', 1);
+
 const origenesPermitidos = (process.env.CLIENT_URL || 'http://localhost:5173')
   .split(',')
   .map((o) => o.trim());
