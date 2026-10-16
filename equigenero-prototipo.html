@@ -1,0 +1,1082 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#f8f4fa">
+  <meta name="description" content="Prototipo local EquiGénero para promover la igualdad y registrar situaciones.">
+  <title>EquiGénero — Prototipo</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      color-scheme: light;
+      --ink: #282238;
+      --muted: #81788e;
+      --line: #eee8f0;
+      --canvas: #faf8fb;
+      --surface: #fff;
+      --plum: #392448;
+      --plum-soft: #f1e9f5;
+      --pink: #faedf3;
+      --pink-strong: #e9c6d7;
+      --magenta: #a21c5a;
+      --magenta-dark: #861449;
+      --lavender: #eeeafb;
+      --lavender-ink: #6353a5;
+      --mint: #e8f5ef;
+      --mint-ink: #31785e;
+      --gold: #fbf2df;
+      --gold-ink: #9a6b16;
+      --red: #fcebed;
+      --red-ink: #b34450;
+      --shadow: 0 14px 42px rgba(51, 31, 62, .07);
+      --shadow-soft: 0 5px 18px rgba(51, 31, 62, .055);
+      --radius: 22px;
+      --radius-small: 14px;
+    }
+
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      min-width: 320px;
+      min-height: 100vh;
+      background: var(--canvas);
+      color: var(--ink);
+      font: 15px/1.6 "DM Sans", sans-serif;
+      -webkit-font-smoothing: antialiased;
+    }
+    button, input, select, textarea { font: inherit; }
+    button { cursor: pointer; }
+    a { color: inherit; }
+    .hidden { display: none !important; }
+    .serif { font-family: "Plus Jakarta Sans", sans-serif; letter-spacing: -.04em; }
+
+    .auth-shell {
+      min-height: 100vh;
+      display: grid;
+      grid-template-columns: minmax(320px, .88fr) minmax(420px, 1.12fr);
+      background: var(--surface);
+    }
+    .auth-aside {
+      position: relative;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      min-height: 100vh;
+      padding: 42px clamp(28px, 5vw, 76px);
+      color: #fff;
+      background:
+        radial-gradient(ellipse at 16% 90%, rgba(241, 180, 207, .2), transparent 38%),
+        radial-gradient(ellipse at 95% 10%, rgba(193, 168, 223, .19), transparent 35%),
+        linear-gradient(145deg, #30213e 0%, #40274c 54%, #632b55 100%);
+    }
+    .auth-aside::before, .auth-aside::after {
+      content: "";
+      position: absolute;
+      border: 1px solid rgba(255,255,255,.12);
+      border-radius: 50%;
+      pointer-events: none;
+    }
+    .auth-aside::before { width: 410px; height: 410px; right: -190px; bottom: -125px; }
+    .auth-aside::after { width: 290px; height: 290px; right: -130px; bottom: -65px; }
+    .brand { display: inline-flex; align-items: center; gap: 12px; font: 800 20px "Plus Jakarta Sans", sans-serif; letter-spacing: -.045em; }
+    .brand-mark {
+      display: grid; place-items: center; width: 39px; height: 39px;
+      border: 1px solid rgba(255,255,255,.22); border-radius: 13px;
+      background: rgba(255,255,255,.12); font-size: 19px;
+    }
+    .aside-copy { position: relative; z-index: 1; max-width: 440px; margin: auto 0; padding: 66px 0; }
+    .eyebrow { margin: 0 0 15px; text-transform: uppercase; letter-spacing: .13em; font-size: 11px; font-weight: 700; opacity: .75; }
+    .aside-copy h1 { margin: 0; font: 700 clamp(38px, 5vw, 62px)/1.08 "Plus Jakarta Sans", sans-serif; letter-spacing: -.065em; }
+    .aside-copy p { max-width: 370px; margin: 22px 0 0; color: rgba(255,255,255,.76); font-size: 16px; line-height: 1.8; }
+    .aside-values { display: flex; flex-wrap: wrap; gap: 9px; margin-top: 27px; }
+    .aside-values span { display: inline-flex; align-items: center; gap: 7px; padding: 8px 11px; border: 1px solid rgba(255,255,255,.17); border-radius: 999px; color: rgba(255,255,255,.88); background: rgba(255,255,255,.09); backdrop-filter: blur(8px); font-size: 11px; font-weight: 600; }
+    .aside-values span::before { content: ""; width: 7px; height: 7px; border-radius: 50%; background: #f49dc4; box-shadow: 0 0 12px rgba(244,157,196,.7); }
+    .aside-values span:nth-child(2)::before { background: #c5a8f4; box-shadow: 0 0 12px rgba(197,168,244,.7); }
+    .aside-values span:nth-child(3)::before { background: #95ddc1; box-shadow: 0 0 12px rgba(149,221,193,.7); }
+    .aside-note { position: relative; z-index: 1; color: rgba(255,255,255,.58); font-size: 12px; }
+
+    .auth-main { display: grid; place-items: center; padding: 42px 24px; }
+    .auth-card { width: min(100%, 430px); }
+    .auth-mobile-brand { display: none; }
+    .auth-card h2 { margin: 0; font: 700 31px/1.25 "Plus Jakarta Sans", sans-serif; letter-spacing: -.05em; }
+    .auth-intro { margin: 10px 0 28px; color: var(--muted); }
+    .auth-tabs { display: flex; gap: 7px; padding: 5px; margin: 0 0 24px; border-radius: 14px; background: #f6f2f7; }
+    .auth-tab {
+      flex: 1; border: 0; border-radius: 10px; padding: 10px 12px;
+      color: var(--muted); background: transparent; font-weight: 700; transition: .2s ease;
+    }
+    .auth-tab.active { color: var(--magenta); background: #fff; box-shadow: 0 2px 8px rgba(45,25,54,.08); }
+    .field { display: grid; gap: 7px; margin-bottom: 17px; }
+    .field label, .field-label { color: #4c4358; font-size: 13px; font-weight: 700; }
+    .field input, .field select, .field textarea {
+      width: 100%; border: 1px solid #e8e1eb; border-radius: 12px; outline: 0;
+      padding: 12px 14px; color: var(--ink); background: #fff;
+      transition: border-color .18s ease, box-shadow .18s ease, background .18s ease;
+    }
+    .field textarea { min-height: 128px; resize: vertical; }
+    .password-wrap { position: relative; }
+    .password-wrap input { padding-right: 70px; }
+    .password-toggle { position: absolute; top: 50%; right: 7px; transform: translateY(-50%); border: 0; border-radius: 8px; padding: 6px 8px; color: #8b6682; background: transparent; font-size: 11px; font-weight: 700; }
+    .password-toggle:hover { color: var(--magenta); background: #fbf0f6; }
+    .password-toggle:focus-visible { outline: 2px solid rgba(162,28,90,.35); outline-offset: 1px; }
+    .field input::placeholder, .field textarea::placeholder { color: #b5adbd; }
+    .field input:focus, .field select:focus, .field textarea:focus {
+      border-color: #c45a89; box-shadow: 0 0 0 4px rgba(162,28,90,.09); background: #fff;
+    }
+    .helper { margin: -7px 0 17px; color: var(--muted); font-size: 12px; }
+    .button {
+      display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+      min-height: 43px; border: 1px solid transparent; border-radius: 12px;
+      padding: 10px 16px; color: var(--ink); background: #fff; font-weight: 700;
+      text-decoration: none; transition: transform .18s ease, box-shadow .18s ease, background .18s ease;
+    }
+    .button:hover { transform: translateY(-1px); box-shadow: var(--shadow-soft); }
+    .button:focus-visible, .nav-button:focus-visible, .auth-tab:focus-visible { outline: 3px solid rgba(162,28,90,.28); outline-offset: 2px; }
+    .button-primary { color: #fff; background: var(--magenta); box-shadow: 0 6px 15px rgba(162,28,90,.18); }
+    .button-primary:hover { background: var(--magenta-dark); }
+    .button-outline { border-color: #e8dce9; color: var(--magenta); background: transparent; }
+    .button-quiet { color: #72677d; background: transparent; }
+    .button-small { min-height: 34px; padding: 6px 10px; border-radius: 10px; font-size: 12px; }
+    .button-block { width: 100%; min-height: 48px; margin-top: 4px; }
+    .demo-box { display: flex; gap: 11px; margin-top: 24px; padding: 14px; border: 1px solid #f0e7ef; border-radius: 13px; background: #fcf8fb; color: var(--muted); font-size: 12px; }
+    .demo-box strong { color: var(--ink); }
+    .auth-local-note { display: flex; gap: 10px; margin-top: 21px; padding: 12px 13px; border: 1px solid #eee5f0; border-radius: 12px; color: #82778a; background: linear-gradient(110deg, #fff8fb, #f7f5fc); font-size: 11px; line-height: 1.55; }
+    .auth-local-note > span:first-child { flex: none; color: #9a4e89; font-size: 15px; }
+    .auth-local-note > span:last-child { min-width: 0; flex: 1; overflow-wrap: anywhere; }
+    .strength-meter { display: grid; gap: 6px; margin: -8px 0 15px; }
+    .strength-bars { display: grid; grid-template-columns: repeat(4,1fr); gap: 5px; }
+    .strength-bars span { height: 4px; border-radius: 9px; background: #eee9f0; transition: background .18s ease; }
+    .strength-meter[data-level="1"] .strength-bars span:nth-child(-n+1) { background: #d84e68; }
+    .strength-meter[data-level="2"] .strength-bars span:nth-child(-n+2) { background: #e6a63d; }
+    .strength-meter[data-level="3"] .strength-bars span:nth-child(-n+3) { background: #8c71be; }
+    .strength-meter[data-level="4"] .strength-bars span { background: #469879; }
+    .strength-caption { color: #897f90; font-size: 10px; }
+    .strength-meter[data-level="1"] .strength-caption { color: #b33c54; }
+    .strength-meter[data-level="2"] .strength-caption { color: #9a6b16; }
+    .strength-meter[data-level="3"] .strength-caption { color: #70569f; }
+    .strength-meter[data-level="4"] .strength-caption { color: #34785e; }
+
+    .app-shell { min-height: 100vh; }
+    .sidebar {
+      position: fixed; z-index: 5; inset: 0 auto 0 0; display: flex; flex-direction: column;
+      width: 252px; padding: 25px 17px 18px; color: #fff;
+      background: linear-gradient(180deg, #30213e, #382344);
+    }
+    .sidebar .brand { padding: 0 10px 31px; }
+    .nav-label { padding: 0 11px; margin: 0 0 8px; color: rgba(255,255,255,.43); font-size: 10px; font-weight: 700; letter-spacing: .13em; text-transform: uppercase; }
+    .nav-list { display: grid; gap: 5px; }
+    .nav-button {
+      display: flex; align-items: center; gap: 12px; width: 100%; padding: 11px 12px;
+      border: 0; border-radius: 12px; color: rgba(255,255,255,.69);
+      background: transparent; text-align: left; font-weight: 600; transition: .2s ease;
+    }
+    .nav-button:hover { color: #fff; background: rgba(255,255,255,.08); }
+    .nav-button.active { color: #fff; background: linear-gradient(100deg, #a21c5a, #852552); box-shadow: 0 6px 16px rgba(19,10,28,.2); }
+    .nav-icon { display: grid; place-items: center; width: 22px; font-size: 17px; }
+    .sidebar-bottom { margin-top: auto; }
+    .sidebar-tip { margin: 15px 3px; padding: 14px; border: 1px solid rgba(255,255,255,.1); border-radius: 14px; background: rgba(255,255,255,.055); }
+    .sidebar-tip strong { display: block; margin-bottom: 4px; color: #fff; font-size: 12px; }
+    .sidebar-tip span { color: rgba(255,255,255,.57); font-size: 11px; }
+    .user-mini { display: flex; align-items: center; gap: 10px; padding: 15px 7px 0; border-top: 1px solid rgba(255,255,255,.11); }
+    .avatar { display: grid; flex: none; place-items: center; width: 37px; height: 37px; border-radius: 50%; color: var(--magenta); background: #f7dfe9; font-weight: 800; }
+    .user-mini-copy { min-width: 0; flex: 1; }
+    .user-mini-copy strong { display: block; overflow: hidden; color: #fff; font-size: 12px; text-overflow: ellipsis; white-space: nowrap; }
+    .user-mini-copy span { color: rgba(255,255,255,.52); font-size: 11px; }
+    .logout-button { display: grid; place-items: center; width: 34px; height: 34px; border: 0; border-radius: 10px; color: rgba(255,255,255,.7); background: transparent; font-size: 17px; }
+    .logout-button:hover { color: #fff; background: rgba(255,255,255,.1); }
+
+    .main-area { min-height: 100vh; margin-left: 252px; }
+    .topbar {
+      position: sticky; z-index: 4; top: 0; display: flex; align-items: center; justify-content: space-between;
+      min-height: 70px; padding: 0 clamp(23px, 4.1vw, 58px); border-bottom: 1px solid rgba(235,228,238,.85);
+      background: rgba(255,255,255,.86); backdrop-filter: blur(14px);
+    }
+    .topbar-kicker { color: #8d8297; font-size: 11px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; }
+    .topbar-right { display: flex; align-items: center; gap: 11px; color: #756b80; font-size: 13px; }
+    .main-content { width: min(100%, 1250px); margin: 0 auto; padding: 36px clamp(23px, 4.1vw, 58px) 56px; }
+    .mobile-menu { display: none; border: 0; padding: 8px; color: var(--ink); background: transparent; font-size: 21px; }
+    .page-heading { display: flex; align-items: flex-end; justify-content: space-between; gap: 20px; margin-bottom: 27px; }
+    .page-heading h1 { margin: 0; font: 700 clamp(26px, 3vw, 35px)/1.2 "Plus Jakarta Sans", sans-serif; letter-spacing: -.055em; }
+    .page-heading p { margin: 8px 0 0; color: var(--muted); }
+    .heading-actions { display: flex; gap: 9px; }
+    .card {
+      border: 1px solid #efe8f0; border-radius: var(--radius); background: var(--surface);
+      box-shadow: var(--shadow-soft);
+    }
+    .welcome-card {
+      position: relative; overflow: hidden; display: flex; align-items: center; justify-content: space-between;
+      gap: 25px; min-height: 185px; padding: 31px clamp(24px, 4vw, 43px);
+      border: 1px solid #eedce8; border-radius: var(--radius);
+      background: linear-gradient(112deg, #fff 0%, #fff9fc 56%, #f5eff9 100%);
+    }
+    .welcome-card::after { content: "✿"; position: absolute; right: 34px; bottom: -50px; color: rgba(162,28,90,.09); font-size: 205px; line-height: 1; transform: rotate(-16deg); }
+    .welcome-copy { position: relative; z-index: 1; max-width: 570px; }
+    .welcome-copy .eyebrow { margin-bottom: 10px; color: var(--magenta); opacity: 1; }
+    .welcome-copy h2 { margin: 0; font: 700 clamp(25px, 3vw, 34px)/1.2 "Plus Jakarta Sans", sans-serif; letter-spacing: -.05em; }
+    .welcome-copy p { margin: 10px 0 18px; color: var(--muted); }
+    .welcome-symbol { position: relative; z-index: 1; display: grid; flex: none; place-items: center; width: 97px; height: 97px; border: 1px solid #eedce8; border-radius: 27px; color: var(--magenta); background: rgba(255,255,255,.77); font-size: 42px; transform: rotate(4deg); }
+    .section-title { display: flex; align-items: center; justify-content: space-between; gap: 14px; margin: 32px 0 15px; }
+    .section-title h2 { margin: 0; font: 700 19px "Plus Jakarta Sans", sans-serif; letter-spacing: -.035em; }
+    .section-title p { margin: 3px 0 0; color: var(--muted); font-size: 12px; }
+    .stats-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 15px; }
+    .stat-card { padding: 19px 20px; transition: transform .2s ease, box-shadow .2s ease; }
+    .stat-card:hover { transform: translateY(-3px); box-shadow: var(--shadow); }
+    .stat-top { display: flex; align-items: flex-start; justify-content: space-between; gap: 10px; }
+    .stat-label { color: var(--muted); font-size: 12px; font-weight: 600; }
+    .stat-value { margin-top: 10px; font: 800 35px/1 "Plus Jakarta Sans", sans-serif; letter-spacing: -.06em; }
+    .stat-note { margin-top: 7px; color: #9b92a3; font-size: 11px; }
+    .stat-icon { display: grid; place-items: center; width: 39px; height: 39px; border-radius: 13px; font-size: 19px; }
+    .icon-pink { color: var(--magenta); background: var(--pink); }
+    .icon-lavender { color: var(--lavender-ink); background: var(--lavender); }
+    .icon-mint { color: var(--mint-ink); background: var(--mint); }
+    .icon-gold { color: var(--gold-ink); background: var(--gold); }
+    .dashboard-grid { display: grid; grid-template-columns: minmax(0, 1.25fr) minmax(260px, .75fr); gap: 17px; margin-top: 20px; }
+    .panel { padding: 22px; }
+    .panel-header { display: flex; align-items: center; justify-content: space-between; gap: 15px; margin-bottom: 19px; }
+    .panel-header h3 { margin: 0; font: 700 16px "Plus Jakarta Sans", sans-serif; letter-spacing: -.025em; }
+    .panel-header p { margin: 4px 0 0; color: var(--muted); font-size: 12px; }
+    .quick-links { display: grid; grid-template-columns: repeat(3, minmax(0,1fr)); gap: 10px; }
+    .quick-link { display: flex; flex-direction: column; gap: 13px; min-height: 98px; padding: 14px; border: 1px solid #eee7f0; border-radius: 15px; color: var(--ink); background: #fff; text-align: left; transition: .2s ease; }
+    .quick-link:hover { border-color: #e2c6d7; background: #fffbfd; transform: translateY(-2px); }
+    .quick-link span:first-child { display: grid; place-items: center; width: 33px; height: 33px; border-radius: 11px; color: var(--magenta); background: var(--pink); font-size: 17px; }
+    .quick-link strong { font-size: 12px; }
+    .list-stack { display: grid; gap: 10px; }
+    .recent-item { display: flex; align-items: flex-start; gap: 11px; padding: 12px 0; border-bottom: 1px solid #f2edf3; }
+    .recent-item:last-child { border-bottom: 0; }
+    .recent-dot { flex: none; width: 9px; height: 9px; margin-top: 6px; border-radius: 50%; background: var(--magenta); }
+    .recent-copy { min-width: 0; flex: 1; }
+    .recent-copy strong { display: block; font-size: 12px; }
+    .recent-copy span { color: var(--muted); font-size: 11px; }
+    .badge { display: inline-flex; align-items: center; gap: 5px; width: fit-content; border-radius: 999px; padding: 5px 9px; font-size: 10px; font-weight: 700; white-space: nowrap; }
+    .badge-pending { color: #8b6419; background: #fff4d8; }
+    .badge-active { color: #a04470; background: #faeaf1; }
+    .badge-resolved { color: #34745d; background: #e7f5ed; }
+    .badge-low { color: #34745d; background: #e7f5ed; }
+    .badge-medium { color: #8b6419; background: #fff4d8; }
+    .badge-high { color: #ae4650; background: #fcebed; }
+    .badge-admin { color: #6655a2; background: #efebfb; }
+
+    .form-card { padding: clamp(20px, 3vw, 30px); }
+    .form-grid { display: grid; grid-template-columns: repeat(2, minmax(0,1fr)); gap: 0 17px; }
+    .field-full { grid-column: 1 / -1; }
+    .priority-options { display: grid; grid-template-columns: repeat(3,1fr); gap: 9px; }
+    .priority-option { position: relative; }
+    .priority-option input { position: absolute; opacity: 0; pointer-events: none; }
+    .priority-option label { display: flex; align-items: center; gap: 8px; justify-content: center; min-height: 43px; padding: 8px; border: 1px solid #ebe5ed; border-radius: 11px; color: #777080; background: #fff; cursor: pointer; font-size: 12px; font-weight: 700; transition: .18s ease; }
+    .priority-option label::before { content: ""; width: 8px; height: 8px; border-radius: 50%; background: currentColor; }
+    .priority-option.low label { color: #4c8b6d; }
+    .priority-option.medium label { color: #aa7c23; }
+    .priority-option.high label { color: #b44754; }
+    .priority-option input:checked + label { border-color: currentColor; box-shadow: 0 0 0 3px rgba(162,28,90,.07); background: #fffafb; }
+    .priority-option input:focus-visible + label { outline: 3px solid rgba(162,28,90,.22); outline-offset: 2px; }
+    .form-actions { display: flex; justify-content: flex-end; gap: 9px; padding-top: 8px; }
+    .inline-message { display: none; margin: 0 0 17px; padding: 11px 13px; border: 1px solid transparent; border-radius: 11px; font-size: 13px; }
+    .inline-message.show { display: block; }
+    .inline-message.error { color: #9e3540; border-color: #f4cfd3; background: #fff5f6; }
+    .inline-message.success { color: #2d7158; border-color: #cce9d8; background: #f1faf5; }
+
+    .filter-row { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 15px; }
+    .search-field { position: relative; flex: 1; max-width: 340px; }
+    .search-field span { position: absolute; top: 10px; left: 12px; color: #94899b; }
+    .search-field input { width: 100%; min-height: 41px; border: 1px solid #e9e2eb; border-radius: 11px; outline: 0; padding: 9px 12px 9px 36px; background: #fff; }
+    .search-field input:focus { border-color: #c45a89; box-shadow: 0 0 0 3px rgba(162,28,90,.08); }
+    .filter-select { min-height: 41px; border: 1px solid #e9e2eb; border-radius: 11px; padding: 8px 30px 8px 11px; color: #675d71; background: #fff; }
+    .table-wrap { overflow: auto; border: 1px solid #efe9f0; border-radius: 14px; }
+    table { width: 100%; border-collapse: collapse; min-width: 660px; }
+    th, td { padding: 14px 15px; border-bottom: 1px solid #f1edf2; text-align: left; vertical-align: middle; }
+    th { color: #92899a; background: #fcfafc; font-size: 10px; letter-spacing: .08em; text-transform: uppercase; }
+    td { color: #51495d; font-size: 12px; }
+    tbody tr:last-child td { border-bottom: 0; }
+    tbody tr:hover { background: #fdfafd; }
+    .table-main { color: var(--ink); font-weight: 700; }
+    .table-sub { display: block; margin-top: 3px; color: #958b9b; font-size: 11px; }
+    .empty-state { padding: 42px 18px; color: var(--muted); text-align: center; }
+    .empty-state .empty-icon { display: block; margin-bottom: 10px; font-size: 31px; }
+    .empty-state strong { display: block; margin-bottom: 4px; color: var(--ink); }
+    .opportunity-grid { display: grid; grid-template-columns: repeat(3,minmax(0,1fr)); gap: 15px; }
+    .opportunity-card { display: flex; flex-direction: column; min-height: 225px; padding: 20px; transition: transform .2s ease, box-shadow .2s ease; }
+    .opportunity-card:hover { transform: translateY(-3px); box-shadow: var(--shadow); }
+    .opportunity-card h3 { margin: 14px 0 7px; font: 700 16px/1.35 "Plus Jakarta Sans", sans-serif; letter-spacing: -.03em; }
+    .opportunity-card p { margin: 0 0 15px; color: var(--muted); font-size: 12px; line-height: 1.7; }
+    .opportunity-card .button { align-self: flex-start; margin-top: auto; }
+    .event-list { display: grid; gap: 12px; }
+    .event-item { display: flex; align-items: center; gap: 14px; padding: 15px; border: 1px solid #f0eaf1; border-radius: 14px; }
+    .event-date { display: grid; place-items: center; flex: none; width: 52px; height: 54px; border-radius: 13px; color: var(--magenta); background: var(--pink); font-size: 10px; font-weight: 700; text-align: center; line-height: 1.2; }
+    .event-date strong { display: block; font: 800 19px "Plus Jakarta Sans", sans-serif; }
+    .event-copy strong { font-size: 13px; }
+    .event-copy p { margin: 3px 0 0; color: var(--muted); font-size: 11px; }
+    .reports-grid { display: grid; grid-template-columns: minmax(0,1.2fr) minmax(230px,.8fr); gap: 16px; }
+    .chart { display: grid; gap: 17px; }
+    .chart-row { display: grid; grid-template-columns: minmax(100px, .7fr) minmax(120px, 2fr) 34px; align-items: center; gap: 12px; }
+    .chart-label { color: #706678; font-size: 12px; }
+    .chart-track { height: 10px; overflow: hidden; border-radius: 999px; background: #f3eef4; }
+    .chart-bar { height: 100%; min-width: 3px; border-radius: 999px; background: linear-gradient(90deg, #b42d6a, #d782a8); transition: width .35s ease; }
+    .chart-number { color: #776d80; font-size: 12px; font-weight: 700; text-align: right; }
+    .donut-wrap { display: grid; place-items: center; min-height: 208px; }
+    .donut { display: grid; place-items: center; width: 152px; height: 152px; border-radius: 50%; background: conic-gradient(#a21c5a 0 45%, #e7bcce 45% 73%, #bdb3df 73% 100%); }
+    .donut-center { display: grid; place-items: center; width: 105px; height: 105px; border-radius: 50%; background: #fff; }
+    .donut-center strong { font: 800 29px "Plus Jakarta Sans", sans-serif; letter-spacing: -.05em; }
+    .donut-center span { margin-top: -7px; color: var(--muted); font-size: 10px; }
+    .legend { display: grid; gap: 8px; width: 100%; margin-top: 9px; }
+    .legend-row { display: flex; align-items: center; gap: 8px; color: #726a7b; font-size: 11px; }
+    .legend-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--magenta); }
+    .legend-dot.pink { background: #e7bcce; }
+    .legend-dot.lavender { background: #bdb3df; }
+    .privacy-note { display: flex; gap: 10px; margin-top: 17px; padding: 14px 16px; border: 1px solid #eee8f0; border-radius: 13px; color: #82788d; background: #fff; font-size: 11px; }
+    .toast-region { position: fixed; z-index: 20; top: 18px; right: 18px; display: grid; gap: 9px; width: min(360px, calc(100vw - 36px)); }
+    .toast { display: flex; align-items: flex-start; gap: 10px; padding: 13px 15px; border: 1px solid #d9eddf; border-radius: 13px; color: #28694e; background: #f3fbf5; box-shadow: var(--shadow); animation: toast-in .22s ease-out; font-size: 13px; }
+    .toast.error { border-color: #f3d7d9; color: #9e3540; background: #fff5f6; }
+    @keyframes toast-in { from { opacity: 0; transform: translateY(-7px); } to { opacity: 1; transform: translateY(0); } }
+    .confirm-backdrop { position: fixed; z-index: 30; inset: 0; display: grid; place-items: center; padding: 20px; background: rgba(32,20,41,.45); backdrop-filter: blur(4px); }
+    .confirm-dialog { width: min(100%, 410px); padding: 25px; border: 1px solid #efe6f0; border-radius: 20px; background: #fff; box-shadow: 0 24px 70px rgba(25,15,32,.22); animation: toast-in .18s ease-out; }
+    .confirm-dialog h2 { margin: 0; font: 700 20px "Plus Jakarta Sans", sans-serif; letter-spacing: -.04em; }
+    .confirm-dialog p { margin: 9px 0 22px; color: var(--muted); font-size: 13px; }
+    .confirm-actions { display: flex; justify-content: flex-end; gap: 9px; }
+    .button-danger { color: #fff; background: #b34450; }
+    .button-danger:hover { background: #963641; }
+    .mobile-overlay { display: none; }
+    @media (max-width: 1080px) {
+      .stats-grid { grid-template-columns: repeat(2,minmax(0,1fr)); }
+      .opportunity-grid { grid-template-columns: repeat(2,minmax(0,1fr)); }
+    }
+    @media (max-width: 760px) {
+      .auth-shell { grid-template-columns: 1fr; }
+      .auth-aside { display: none; }
+      .auth-main { align-items: start; padding: 24px 22px 40px; }
+      .auth-mobile-brand { display: flex; margin-bottom: 44px; color: var(--plum); }
+      .auth-mobile-brand .brand-mark { color: var(--magenta); border-color: #f0dce7; background: #fbf2f7; }
+      .sidebar { width: 276px; transform: translateX(-105%); transition: transform .22s ease; box-shadow: 14px 0 35px rgba(30,19,38,.18); }
+      .sidebar.open { transform: translateX(0); }
+      .mobile-overlay { position: fixed; z-index: 4; inset: 0; background: rgba(24,15,31,.38); }
+      .mobile-overlay.show { display: block; }
+      .main-area { margin-left: 0; }
+      .topbar { min-height: 62px; padding: 0 17px; }
+      .mobile-menu { display: inline-grid; place-items: center; }
+      .topbar-left { display: flex; align-items: center; gap: 9px; }
+      .topbar-kicker { font-size: 10px; }
+      .topbar-right > span:first-child { display: none; }
+      .main-content { padding: 25px 17px 42px; }
+      .page-heading { align-items: flex-start; flex-direction: column; margin-bottom: 21px; }
+      .heading-actions { width: 100%; }
+      .dashboard-grid, .reports-grid { grid-template-columns: 1fr; }
+      .welcome-card { min-height: 160px; padding: 23px 20px; }
+      .welcome-symbol { width: 67px; height: 67px; border-radius: 20px; font-size: 29px; }
+      .welcome-card::after { right: 7px; font-size: 150px; }
+    }
+    @media (max-width: 520px) {
+      .stats-grid { gap: 10px; }
+      .stat-card { padding: 15px; }
+      .stat-value { font-size: 30px; }
+      .quick-links { grid-template-columns: 1fr; }
+      .quick-link { flex-direction: row; align-items: center; min-height: 60px; }
+      .opportunity-grid { grid-template-columns: 1fr; }
+      .form-grid { grid-template-columns: 1fr; }
+      .field-full { grid-column: auto; }
+      .priority-options { gap: 6px; }
+      .priority-option label { gap: 5px; font-size: 10px; }
+      .filter-row { align-items: stretch; flex-direction: column; }
+      .search-field { max-width: none; }
+      .filter-select { width: 100%; }
+      .welcome-symbol { display: none; }
+      .panel { padding: 18px; }
+      .chart-row { grid-template-columns: 95px minmax(60px,1fr) 24px; gap: 8px; }
+      .auth-card h2 { font-size: 28px; }
+    }
+    /* Richer, more expressive color layer */
+    body { background: radial-gradient(ellipse at 84% 0%, #f4eafa 0, transparent 28%), radial-gradient(ellipse at 6% 52%, #fff0f5 0, transparent 25%), #faf8fc; }
+    .sidebar { background: radial-gradient(ellipse at 0% 15%, rgba(187,89,153,.28), transparent 32%), linear-gradient(165deg, #30213e 0%, #382344 56%, #4b2851 100%); }
+    .sidebar .brand-mark { color: #ffe2ee; border-color: rgba(255,203,224,.3); background: linear-gradient(145deg, rgba(226,98,158,.38), rgba(155,104,195,.24)); }
+    .nav-button.active { background: linear-gradient(105deg, #bb286d 0%, #a32373 54%, #824da5 100%); box-shadow: 0 8px 20px rgba(18,8,27,.26), inset 0 1px rgba(255,255,255,.18); }
+    .nav-button.active .nav-icon { color: #ffe1ef; }
+    .sidebar-tip { border-color: rgba(246,179,215,.2); background: linear-gradient(135deg, rgba(185,73,132,.18), rgba(133,84,163,.12)); }
+    .topbar { background: rgba(255,255,255,.91); }
+    .topbar-kicker { color: #8d5981; }
+    .main-content { position: relative; }
+    .page-heading h1 { color: #332340; }
+    .page-heading h1::after { content: ""; display: block; width: 42px; height: 4px; margin-top: 10px; border-radius: 9px; background: linear-gradient(90deg, #d54a8b, #9067c0, #64a99a); }
+    .welcome-card { border-color: #efd5e4; background: radial-gradient(ellipse at 88% 20%, rgba(197,161,224,.25), transparent 29%), radial-gradient(ellipse at 5% 110%, rgba(241,179,208,.27), transparent 37%), linear-gradient(112deg, #fff 0%, #fff5fa 51%, #f3eefb 100%); }
+    .welcome-card::after { color: rgba(162,28,90,.13); text-shadow: 0 9px 25px rgba(128,71,147,.08); }
+    .welcome-copy .eyebrow { color: #aa2868; }
+    .welcome-copy h2 { color: #382143; }
+    .welcome-symbol { color: #a22869; border-color: #ecd2e4; background: linear-gradient(145deg, rgba(255,255,255,.95), #faeaf3); box-shadow: 0 13px 34px rgba(110,50,103,.11); }
+    .stat-card { position: relative; overflow: hidden; border-color: #eee4f0; }
+    .stat-card::before { content: ""; position: absolute; inset: 0 0 auto; height: 4px; background: linear-gradient(90deg, #d64b8c, #a451a2); }
+    .stat-card:nth-child(2)::before { background: linear-gradient(90deg, #edb745, #e88e74); }
+    .stat-card:nth-child(3)::before { background: linear-gradient(90deg, #55aa90, #80c49c); }
+    .stat-card:nth-child(4)::before { background: linear-gradient(90deg, #8170c8, #bd75b0); }
+    .stat-card:nth-child(1) .stat-value { color: #a21c5a; }
+    .stat-card:nth-child(2) .stat-value { color: #ad7a1e; }
+    .stat-card:nth-child(3) .stat-value { color: #398268; }
+    .stat-card:nth-child(4) .stat-value { color: #6d5aac; }
+    .stat-icon.icon-pink { color: #a21c5a; background: linear-gradient(145deg, #fde5ef, #f7d5e6); }
+    .stat-icon.icon-gold { color: #9b6514; background: linear-gradient(145deg, #fff2d1, #ffe8b6); }
+    .stat-icon.icon-mint { color: #2e785c; background: linear-gradient(145deg, #ddf4e8, #c9ebda); }
+    .stat-icon.icon-lavender { color: #6251a3; background: linear-gradient(145deg, #ece7ff, #ded6fa); }
+    .dashboard-grid > .panel:first-child { background: linear-gradient(145deg, #fff 0%, #fff8fb 100%); border-color: #efdfeb; }
+    .dashboard-grid > .panel:last-child { background: linear-gradient(145deg, #fff 0%, #f8f7ff 100%); border-color: #e7e2f2; }
+    .quick-link:nth-child(1) { border-color: #f1dbe7; background: linear-gradient(145deg, #fff, #fff6fa); }
+    .quick-link:nth-child(2) { border-color: #e7e0f4; background: linear-gradient(145deg, #fff, #f8f5ff); }
+    .quick-link:nth-child(3) { border-color: #dceee5; background: linear-gradient(145deg, #fff, #f4fbf7); }
+    .quick-link:nth-child(2) span:first-child { color: #6755a7; background: #ece7fa; }
+    .quick-link:nth-child(3) span:first-child { color: #397b60; background: #e5f4eb; }
+    .button-primary { background: linear-gradient(105deg, #ad1e60, #c12b78 58%, #98429a); box-shadow: 0 7px 17px rgba(162,28,90,.23); }
+    .button-primary:hover { background: linear-gradient(105deg, #8e164e, #a91d66 58%, #7e3288); }
+    .button-outline { border-color: #ecd6e3; color: #9c1c59; background: rgba(255,255,255,.65); }
+    .badge-active { color: #963564; background: linear-gradient(90deg, #fce5ef, #f9e6f3); }
+    .badge-pending { color: #855911; background: linear-gradient(90deg, #fff1cc, #ffedda); }
+    .badge-resolved { color: #2d7055; background: linear-gradient(90deg, #e1f4e9, #e9f6ec); }
+    .badge-admin { color: #5e4c9b; background: linear-gradient(90deg, #eae5fb, #f2e8f5); }
+    .opportunity-card { position: relative; overflow: hidden; }
+    .opportunity-card::before { content: ""; position: absolute; inset: 0 0 auto; height: 5px; background: linear-gradient(90deg, #dc6098, #bc6aaa); }
+    .opportunity-card:nth-child(2)::before { background: linear-gradient(90deg, #8977ce, #c178ba); }
+    .opportunity-card:nth-child(3)::before { background: linear-gradient(90deg, #54a78b, #a3bc69); }
+    .opportunity-card:nth-child(4n+1) { background: linear-gradient(150deg, #fff 55%, #fff3f8); }
+    .opportunity-card:nth-child(4n+2) { background: linear-gradient(150deg, #fff 55%, #f5f1ff); }
+    .opportunity-card:nth-child(4n+3) { background: linear-gradient(150deg, #fff 55%, #effaf4); }
+    .opportunity-card .stat-icon { box-shadow: 0 6px 14px rgba(72,38,83,.08); }
+    .event-item { background: linear-gradient(100deg, #fff 57%, #fff5f9); border-color: #f0dfeb; transition: transform .18s ease, box-shadow .18s ease; }
+    .event-item:nth-child(2) { background: linear-gradient(100deg, #fff 57%, #f5f1ff); border-color: #e8e1f2; }
+    .event-item:nth-child(3) { background: linear-gradient(100deg, #fff 57%, #f1faf5); border-color: #dfefe6; }
+    .event-item:hover { transform: translateX(3px); box-shadow: var(--shadow-soft); }
+    .event-item:nth-child(1) .event-date { color: #a21c5a; background: linear-gradient(145deg, #fbe0ec, #f6d2e4); }
+    .event-item:nth-child(2) .event-date { color: #6754a6; background: linear-gradient(145deg, #e8e2fa, #dcd4f6); }
+    .event-item:nth-child(3) .event-date { color: #347b60; background: linear-gradient(145deg, #dcf2e5, #ccebd9); }
+    .chart-track { background: linear-gradient(90deg, #f4eaf1, #f0edf7); }
+    .chart-bar { background: linear-gradient(90deg, #a21c5a, #d1498a 56%, #8f61b6); }
+    .donut { filter: drop-shadow(0 9px 17px rgba(86,49,105,.13)); }
+    .form-card { background: radial-gradient(ellipse at 100% 0%, rgba(238,226,249,.36), transparent 28%), #fff; }
+    .priority-option.low input:checked + label { background: #f0fbf4; }
+    .priority-option.medium input:checked + label { background: #fff9e9; }
+    .priority-option.high input:checked + label { background: #fff3f4; }
+    .table-wrap { border-color: #eadfea; }
+    th { color: #7b5579; background: linear-gradient(90deg, #fcf3f8, #f7f4fb); }
+    tbody tr:hover { background: #fff6fa; }
+    .auth-tabs { background: linear-gradient(100deg, #f8eaf1, #f0ebfa); }
+    .demo-box { border-color: #eedce9; background: linear-gradient(110deg, #fff7fb, #f6f1fb); }
+    .demo-box > span { color: #b02b70; }
+    .toast { background: linear-gradient(110deg, #f0fbf5, #f5fcf8); }
+    .auth-aside { isolation: isolate; background: radial-gradient(ellipse at 15% 84%, rgba(222,91,157,.31), transparent 35%), radial-gradient(ellipse at 90% 17%, rgba(156,118,222,.3), transparent 34%), linear-gradient(148deg, #30213e 0%, #47264e 54%, #772c61 100%); }
+    .auth-aside::before { width: 480px; height: 480px; right: -215px; bottom: -172px; border-color: rgba(255,214,235,.19); box-shadow: 0 0 0 28px rgba(255,255,255,.025), 0 0 0 58px rgba(255,255,255,.02); }
+    .auth-aside::after { width: 310px; height: 310px; right: -122px; bottom: -91px; border-color: rgba(255,214,235,.18); }
+    .auth-aside .brand-mark { border: 1px solid rgba(255,255,255,.35); background: linear-gradient(145deg, rgba(255,175,211,.3), rgba(190,157,240,.24)); box-shadow: 0 8px 22px rgba(18,8,28,.13); }
+    .aside-copy h1 { max-width: 470px; text-wrap: balance; }
+    .aside-copy p { max-width: 390px; }
+    .auth-main { position: relative; overflow: hidden; background: radial-gradient(ellipse at 94% 4%, rgba(229,212,247,.45), transparent 30%), radial-gradient(ellipse at 7% 96%, rgba(255,226,238,.65), transparent 31%), #fff; }
+    .auth-main::before, .auth-main::after { content: ""; position: absolute; z-index: 0; border-radius: 50%; pointer-events: none; }
+    .auth-main::before { width: 190px; height: 190px; top: 7%; right: 8%; border: 1px solid rgba(184,126,191,.13); box-shadow: 0 0 0 22px rgba(184,126,191,.035), 0 0 0 45px rgba(184,126,191,.025); }
+    .auth-main::after { width: 100px; height: 100px; bottom: 7%; left: 7%; background: radial-gradient(circle at 35% 35%, rgba(239,183,209,.3), rgba(221,208,245,.08) 72%, transparent); }
+    .auth-card { position: relative; z-index: 1; padding: clamp(20px, 3vw, 32px); border: 1px solid rgba(239,226,240,.85); border-radius: 24px; background: rgba(255,255,255,.84); box-shadow: 0 18px 58px rgba(61,35,72,.075); backdrop-filter: blur(12px); }
+    .auth-card::before { content: ""; position: absolute; top: -1px; left: 28px; width: 62px; height: 3px; border-radius: 0 0 5px 5px; background: linear-gradient(90deg, #df4a92, #9271c5, #69b49c); }
+    .auth-card .eyebrow { display: flex; align-items: center; gap: 8px; }
+    .auth-card .eyebrow::before { content: ""; width: 22px; height: 3px; border-radius: 4px; background: linear-gradient(90deg, #d43e85, #9a5eb5); }
+    .auth-card h2 { text-wrap: balance; }
+    .auth-card .auth-intro { margin-bottom: 23px; }
+    .auth-tabs { border: 1px solid #f0e6f0; }
+    .auth-tab.active { background: linear-gradient(120deg, #fff, #fff7fb); box-shadow: 0 3px 10px rgba(81,35,77,.1); }
+    .auth-card .field input { min-height: 47px; }
+    .auth-card .button-block { min-height: 49px; }
+    .demo-box { box-shadow: 0 6px 18px rgba(97,46,91,.045); }
+    .app-shell .main-content > * { animation: page-in .28s ease-out both; }
+    .app-shell .main-content > *:nth-child(2) { animation-delay: .035s; }
+    .app-shell .main-content > *:nth-child(3) { animation-delay: .07s; }
+    .app-shell .main-content > *:nth-child(4) { animation-delay: .105s; }
+    @keyframes page-in { from { opacity: .72; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
+    .card { box-shadow: 0 7px 25px rgba(51,31,62,.055); }
+    .section-title h2 { color: #44304f; }
+    .panel-header h3 { color: #44304f; }
+    .privacy-note { box-shadow: 0 4px 13px rgba(51,31,62,.035); }
+    @media (max-width: 760px) {
+      .auth-main { min-height: 100vh; }
+      .auth-main::before { top: 12%; right: -76px; }
+      .auth-main::after { bottom: 3%; left: -35px; }
+      .auth-card { padding: 0; border: 0; background: transparent; box-shadow: none; backdrop-filter: none; }
+      .auth-mobile-brand { margin-bottom: 37px; }
+      .auth-aside { display: none; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { scroll-behavior: auto !important; animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; }
+    }
+  </style>
+</head>
+<body>
+  <div id="app"></div>
+  <div id="toast-region" class="toast-region" aria-live="polite" aria-atomic="true"></div>
+  <script>
+    (() => {
+      "use strict";
+
+      const STORAGE = {
+        users: "equigenero_prototipo_users_v1",
+        reports: "equigenero_prototipo_reports_v1",
+        session: "equigenero_prototipo_session_v1"
+      };
+      const adminDemo = {
+        id: "admin-demo",
+        name: "Administradora",
+        email: "admin@equigenero.com",
+        password: "Admin12345!",
+        role: "administrador"
+      };
+      const initialOpportunities = [
+        {
+          tag: "Orientación · Colombia",
+          color: "pink",
+          title: "Línea 155 para orientación a mujeres",
+          description: "Canal nacional de orientación sobre violencias basadas en género. Si hay una emergencia inmediata, llama al 123.",
+          action: "Información oficial",
+          url: "https://www.policia.gov.co/patrulla-purpura"
+        },
+        {
+          tag: "Voluntariado",
+          color: "lavender",
+          title: "Voluntariado en línea de Naciones Unidas",
+          description: "Explora asignaciones de voluntariado en línea y encuentra iniciativas en las que participar.",
+          action: "Explorar oportunidades",
+          url: "https://app.unv.org/"
+        },
+        {
+          tag: "Recurso permanente",
+          color: "mint",
+          title: "Igualdad de género · ODS 5",
+          description: "Conoce metas y acciones globales para alcanzar la igualdad de género y empoderar a todas las mujeres y niñas.",
+          action: "Consultar la ONU",
+          url: "https://www.un.org/sustainabledevelopment/es/gender-equality/"
+        }
+      ];
+      const events = [
+        { day: "25", month: "NOV", title: "Día Internacional de la Eliminación de la Violencia contra la Mujer", detail: "Cada año · Campaña global de sensibilización" },
+        { day: "08", month: "MAR", title: "Día Internacional de las Mujeres", detail: "Cada año · Participación, igualdad y derechos" },
+        { day: "10", month: "DIC", title: "Día de los Derechos Humanos", detail: "Cada año · Cierre de los 16 días de activismo" }
+      ];
+      const categories = ["Acoso", "Discriminación educativa", "Desigualdad de oportunidades", "Violencia basada en género", "Otro"];
+      const app = document.getElementById("app");
+      const toastRegion = document.getElementById("toast-region");
+      let authMode = "login";
+      let currentPage = "dashboard";
+      let searchTerm = "";
+      let statusFilter = "all";
+      let mobileNavOpen = false;
+
+      function readStorage(key, fallback) {
+        try {
+          const value = localStorage.getItem(key);
+          return value ? JSON.parse(value) : fallback;
+        } catch (error) {
+          console.error("No se pudo leer el almacenamiento local:", error);
+          return fallback;
+        }
+      }
+      function writeStorage(key, value) {
+        try {
+          localStorage.setItem(key, JSON.stringify(value));
+          return true;
+        } catch (error) {
+          console.error("No se pudo guardar en el almacenamiento local:", error);
+          showToast("No se pudo guardar. Revisa el espacio disponible del navegador.", "error");
+          return false;
+        }
+      }
+      function getUsers() {
+        const users = readStorage(STORAGE.users, []);
+        return Array.isArray(users) ? users : [];
+      }
+      function getReports() {
+        const reports = readStorage(STORAGE.reports, []);
+        return Array.isArray(reports) ? reports : [];
+      }
+      function getCurrentUser() {
+        const session = readStorage(STORAGE.session, null);
+        if (!session || typeof session !== "object" || !session.email) return null;
+        if (session.id === adminDemo.id) return adminDemo;
+        return getUsers().find((user) => user.id === session.id) || null;
+      }
+      function escapeHtml(value) {
+        return String(value ?? "").replace(/[&<>"']/g, (char) => ({
+          "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;"
+        })[char]);
+      }
+      function formatDate(dateValue) {
+        if (!dateValue) return "Sin fecha";
+        const date = new Date(`${dateValue}T12:00:00`);
+        return new Intl.DateTimeFormat("es-CO", { day: "numeric", month: "short", year: "numeric" }).format(date);
+      }
+      function showToast(message, type = "success") {
+        const toast = document.createElement("div");
+        toast.className = `toast${type === "error" ? " error" : ""}`;
+        toast.setAttribute("role", type === "error" ? "alert" : "status");
+        toast.innerHTML = `<span aria-hidden="true">${type === "error" ? "!" : "✓"}</span><span>${escapeHtml(message)}</span>`;
+        toastRegion.appendChild(toast);
+        window.setTimeout(() => toast.remove(), 4200);
+      }
+      function setInlineMessage(element, message, type = "error") {
+        element.className = `inline-message show ${type}`;
+        element.textContent = message;
+      }
+      function clearInlineMessage(element) {
+        element.className = "inline-message";
+        element.textContent = "";
+      }
+      function authView() {
+        const registering = authMode === "register";
+        app.innerHTML = `
+          <main class="auth-shell">
+            <aside class="auth-aside">
+              <a class="brand" href="#" aria-label="EquiGénero, inicio"><span class="brand-mark">✿</span>EquiGénero</a>
+              <div class="aside-copy">
+                <p class="eyebrow">Igualdad · Respeto · Acción</p>
+                <h1 class="serif">Un espacio para avanzar juntas.</h1>
+                <p>Aprende, encuentra recursos y contribuye a una comunidad más segura e igualitaria.</p>
+                <div class="aside-values" aria-label="Valores EquiGénero">
+                  <span>Escucha</span><span>Equidad</span><span>Bienestar</span>
+                </div>
+              </div>
+              <div class="aside-note">Prototipo educativo · ODS 5 · Datos guardados en este navegador</div>
+            </aside>
+            <section class="auth-main">
+              <div class="auth-card">
+                <a class="brand auth-mobile-brand" href="#"><span class="brand-mark">✿</span>EquiGénero</a>
+                <p class="eyebrow" style="color:var(--magenta);opacity:1">Bienvenida</p>
+                <h2>${registering ? "Crea tu cuenta" : "Qué gusto tenerte aquí"}</h2>
+                <p class="auth-intro">${registering ? "Únete a la comunidad EquiGénero." : "Ingresa para continuar en tu espacio EquiGénero."}</p>
+                <div class="auth-tabs" role="tablist" aria-label="Acceso o registro">
+                  <button class="auth-tab ${!registering ? "active" : ""}" type="button" data-auth-mode="login" role="tab" aria-selected="${!registering}">Iniciar sesión</button>
+                  <button class="auth-tab ${registering ? "active" : ""}" type="button" data-auth-mode="register" role="tab" aria-selected="${registering}">Crear cuenta</button>
+                </div>
+                <div id="auth-message" class="inline-message" aria-live="polite"></div>
+                <form id="auth-form" novalidate>
+                  ${registering ? `<div class="field"><label for="auth-name">Nombre</label><input id="auth-name" name="name" type="text" autocomplete="name" placeholder="¿Cómo te llamas?" maxlength="70" required></div>` : ""}
+                  <div class="field"><label for="auth-email">Correo electrónico</label><input id="auth-email" name="email" type="email" autocomplete="email" placeholder="nombre@correo.com" maxlength="120" required></div>
+                  <div class="field"><label for="auth-password">Contraseña</label><div class="password-wrap"><input id="auth-password" name="password" type="password" autocomplete="${registering ? "new-password" : "current-password"}" placeholder="${registering ? "Al menos 8 caracteres" : "Escribe tu contraseña"}" minlength="${registering ? "8" : "1"}" maxlength="100" required><button class="password-toggle" type="button" data-action="toggle-password" aria-controls="auth-password" aria-pressed="false">Mostrar</button></div></div>
+                  ${registering ? `<div id="password-strength" class="strength-meter" data-level="0" aria-live="polite"><div class="strength-bars" aria-hidden="true"><span></span><span></span><span></span><span></span></div><span class="strength-caption">Usa al menos 8 caracteres.</span></div>` : ""}
+                  <button class="button button-primary button-block" type="submit">${registering ? "Crear cuenta" : "Ingresar"} <span aria-hidden="true">→</span></button>
+                </form>
+                <div class="auth-local-note"><span aria-hidden="true">ⓘ</span><span>Prototipo local: las cuentas se guardan en este navegador y no se sincronizan con otros dispositivos. No uses contraseñas ni datos personales que utilices fuera de esta demostración.</span></div>
+              </div>
+            </section>
+          </main>`;
+      }
+      function navItem(page, icon, label, adminOnly = false) {
+        const user = getCurrentUser();
+        if (adminOnly && user?.role !== "administrador") return "";
+        return `<button class="nav-button ${currentPage === page ? "active" : ""}" type="button" data-page="${page}" ${currentPage === page ? 'aria-current="page"' : ""}><span class="nav-icon" aria-hidden="true">${icon}</span>${label}</button>`;
+      }
+      function shellView(content) {
+        const user = getCurrentUser();
+        if (!user) return authView();
+        const initial = escapeHtml((user.name || user.email).trim().charAt(0).toUpperCase());
+        app.innerHTML = `
+          <div class="app-shell">
+            <div id="mobile-overlay" class="mobile-overlay ${mobileNavOpen ? "show" : ""}"></div>
+            <aside id="sidebar" class="sidebar ${mobileNavOpen ? "open" : ""}" aria-label="Navegación principal">
+              <a class="brand" href="#" data-page="dashboard"><span class="brand-mark">✿</span>EquiGénero</a>
+              <p class="nav-label">Menú principal</p>
+              <nav class="nav-list">
+                ${navItem("dashboard", "⌂", "Panel")}
+                ${navItem("register", "＋", "Registrar situación")}
+                ${navItem("reports-list", "▤", "Mis situaciones")}
+                ${navItem("resources", "✦", "Recursos")}
+                ${navItem("opportunities", "♡", "Oportunidades")}
+                ${navItem("events", "▦", "Fechas importantes")}
+                ${navItem("reports", "▥", "Reportes", true)}
+              </nav>
+              <div class="sidebar-bottom">
+                <div class="sidebar-tip"><strong>Un espacio de apoyo</strong><span>Si estás en peligro inmediato, llama a emergencias de tu país.</span></div>
+                <div class="user-mini">
+                  <span class="avatar">${initial}</span>
+                  <div class="user-mini-copy"><strong>${escapeHtml(user.name)}</strong><span>${user.role === "administrador" ? "Administradora" : "Miembro"}</span></div>
+                  <button class="logout-button" type="button" data-action="logout" aria-label="Cerrar sesión" title="Cerrar sesión">↗</button>
+                </div>
+              </div>
+            </aside>
+            <div class="main-area">
+              <header class="topbar">
+                <div class="topbar-left"><button class="mobile-menu" type="button" data-action="menu" aria-label="Abrir menú" aria-expanded="${mobileNavOpen}">☰</button><span class="topbar-kicker">Un espacio de igualdad y bienestar</span></div>
+                <div class="topbar-right"><span>${user.role === "administrador" ? "Administradora" : "Hola, " + escapeHtml(user.name.split(" ")[0])}</span><span class="avatar" style="width:32px;height:32px;font-size:12px">${initial}</span></div>
+              </header>
+              <main id="main-content" class="main-content">${content}</main>
+            </div>
+          </div>`;
+      }
+      function statusBadge(status) {
+        const classes = { Pendiente: "badge-pending", Activo: "badge-active", Resuelto: "badge-resolved" };
+        return `<span class="badge ${classes[status] || "badge-pending"}">${escapeHtml(status)}</span>`;
+      }
+      function priorityBadge(priority) {
+        const classes = { Baja: "badge-low", Media: "badge-medium", Alta: "badge-high" };
+        return `<span class="badge ${classes[priority] || "badge-medium"}">${escapeHtml(priority)}</span>`;
+      }
+      function visibleReports() {
+        const reports = getReports();
+        const user = getCurrentUser();
+        return user?.role === "administrador" ? reports : reports.filter((report) => report.userId === user?.id);
+      }
+      function pageHeading(title, description, actions = "") {
+        return `<div class="page-heading"><div><h1>${title}</h1><p>${description}</p></div>${actions ? `<div class="heading-actions">${actions}</div>` : ""}</div>`;
+      }
+      function dashboardView() {
+        const user = getCurrentUser();
+        const reports = visibleReports();
+        const pending = reports.filter((report) => report.status === "Pendiente").length;
+        const resolved = reports.filter((report) => report.status === "Resuelto").length;
+        const greeting = user.role === "administrador" ? "Bienvenida, administradora" : `Hola, ${escapeHtml(user.name.split(" ")[0])}`;
+        const recent = [...reports].sort((a, b) => b.createdAt.localeCompare(a.createdAt)).slice(0, 3);
+        return `
+          <section class="welcome-card">
+            <div class="welcome-copy"><p class="eyebrow">Tu comunidad, más fuerte</p><h2>${greeting}</h2><p>Un espacio para aprender, encontrar apoyo y construir entornos más justos.</p><button class="button button-primary" type="button" data-page="register">Registrar una situación <span aria-hidden="true">→</span></button></div>
+            <div class="welcome-symbol" aria-hidden="true">✿</div>
+          </section>
+          <div class="section-title"><div><h2>En un vistazo</h2><p>Resumen de tu espacio EquiGénero</p></div></div>
+          <section class="stats-grid" aria-label="Resumen">
+            <article class="card stat-card"><div class="stat-top"><div><div class="stat-label">${user.role === "administrador" ? "Casos registrados" : "Mis situaciones"}</div><div class="stat-value">${reports.length}</div></div><span class="stat-icon icon-pink" aria-hidden="true">▤</span></div><div class="stat-note">Reportes en el prototipo</div></article>
+            <article class="card stat-card"><div class="stat-top"><div><div class="stat-label">Pendientes</div><div class="stat-value">${pending}</div></div><span class="stat-icon icon-gold" aria-hidden="true">◷</span></div><div class="stat-note">En espera de seguimiento</div></article>
+            <article class="card stat-card"><div class="stat-top"><div><div class="stat-label">Resueltos</div><div class="stat-value">${resolved}</div></div><span class="stat-icon icon-mint" aria-hidden="true">✓</span></div><div class="stat-note">Con proceso finalizado</div></article>
+            <article class="card stat-card"><div class="stat-top"><div><div class="stat-label">Recursos y oportunidades</div><div class="stat-value">${initialOpportunities.length}</div></div><span class="stat-icon icon-lavender" aria-hidden="true">✦</span></div><div class="stat-note">Información para acompañarte</div></article>
+          </section>
+          <section class="dashboard-grid">
+            <article class="card panel"><div class="panel-header"><div><h3>Accesos rápidos</h3><p>Lo que necesitas, a un paso</p></div></div><div class="quick-links">
+              <button class="quick-link" type="button" data-page="register"><span>＋</span><strong>Registrar situación</strong></button>
+              <button class="quick-link" type="button" data-page="resources"><span>✦</span><strong>Ver recursos</strong></button>
+              <button class="quick-link" type="button" data-page="opportunities"><span>♡</span><strong>Oportunidades</strong></button>
+            </div></article>
+            <article class="card panel"><div class="panel-header"><div><h3>Actividad reciente</h3><p>Lo último en tu espacio</p></div><button class="button button-quiet button-small" type="button" data-page="reports-list">Ver todo →</button></div>
+              ${recent.length ? `<div class="list-stack">${recent.map((report) => `<div class="recent-item"><span class="recent-dot"></span><div class="recent-copy"><strong>${escapeHtml(report.type)}</strong><span>${escapeHtml(report.place)} · ${formatDate(report.createdAt)}</span></div>${statusBadge(report.status)}</div>`).join("")}</div>` : `<div class="empty-state" style="padding:16px 6px"><span class="empty-icon">♡</span><strong>Aún no hay actividad</strong><span>Cuando registres una situación aparecerá aquí.</span></div>`}
+            </article>
+          </section>
+          <p class="privacy-note"><span aria-hidden="true">ⓘ</span><span>Este es un prototipo: la información se guarda únicamente en el almacenamiento local de este navegador y no se envía a un servidor. No ingreses datos personales o sensibles reales.</span></p>`;
+      }
+      function registerView() {
+        return `${pageHeading("Registrar situación", "Cuéntanos lo ocurrido. Los campos marcados son necesarios.")}<section class="card form-card"><div id="report-message" class="inline-message" aria-live="polite"></div>
+          <form id="report-form" novalidate>
+            <div class="form-grid">
+              <div class="field"><label for="report-type">Tipo de situación *</label><select id="report-type" name="type" required><option value="">Selecciona una opción</option>${categories.map((category) => `<option>${escapeHtml(category)}</option>`).join("")}</select></div>
+              <div class="field"><label for="report-date">Fecha aproximada *</label><input id="report-date" name="date" type="date" max="${new Date().toISOString().slice(0, 10)}" required></div>
+              <div class="field"><label for="report-place">Lugar *</label><input id="report-place" name="place" type="text" maxlength="100" placeholder="Por ejemplo, área o espacio" required></div>
+              <div class="field"><span class="field-label" id="priority-label">Prioridad *</span><div class="priority-options" role="radiogroup" aria-labelledby="priority-label">
+                <div class="priority-option low"><input id="priority-low" name="priority" type="radio" value="Baja" required><label for="priority-low">Baja</label></div>
+                <div class="priority-option medium"><input id="priority-medium" name="priority" type="radio" value="Media"><label for="priority-medium">Media</label></div>
+                <div class="priority-option high"><input id="priority-high" name="priority" type="radio" value="Alta"><label for="priority-high">Alta</label></div>
+              </div></div>
+              <div class="field field-full"><label for="report-description">Descripción *</label><textarea id="report-description" name="description" minlength="15" maxlength="1500" placeholder="Describe la situación de forma clara. Evita incluir nombres completos o datos que identifiquen a otras personas." required></textarea><span class="helper" style="margin:0">Mínimo 15 caracteres. No incluyas información que no sea necesaria.</span></div>
+            </div>
+            <div class="privacy-note" style="margin:0 0 17px"><span aria-hidden="true">ⓘ</span><span>En este prototipo tu registro se guarda en este navegador. No es un canal de denuncia ni sustituye servicios de atención o emergencias.</span></div>
+            <div class="form-actions"><button class="button button-outline" type="reset">Limpiar</button><button class="button button-primary" type="submit">Guardar situación <span aria-hidden="true">→</span></button></div>
+          </form></section>`;
+      }
+      function reportsListView() {
+        const user = getCurrentUser();
+        const reports = visibleReports().filter((report) => {
+          const matchesSearch = `${report.type} ${report.place} ${report.description}`.toLowerCase().includes(searchTerm.toLowerCase());
+          const matchesStatus = statusFilter === "all" || report.status === statusFilter;
+          return matchesSearch && matchesStatus;
+        }).sort((a, b) => b.createdAt.localeCompare(a.createdAt));
+        const actions = user.role === "administrador" ? `<button class="button button-outline button-small" type="button" data-action="export">⇩ Exportar CSV</button>` : "";
+        return `${pageHeading(user.role === "administrador" ? "Situaciones registradas" : "Mis situaciones", user.role === "administrador" ? "Revisa los casos guardados en este navegador." : "Consulta el estado de tus registros.", actions)}
+          <section class="card panel">
+            <div class="filter-row"><label class="search-field"><span aria-hidden="true">⌕</span><input id="report-search" type="search" placeholder="Buscar por tipo, lugar o detalle" value="${escapeHtml(searchTerm)}" aria-label="Buscar situaciones"></label><select id="status-filter" class="filter-select" aria-label="Filtrar por estado"><option value="all" ${statusFilter === "all" ? "selected" : ""}>Todos los estados</option><option ${statusFilter === "Pendiente" ? "selected" : ""}>Pendiente</option><option ${statusFilter === "Activo" ? "selected" : ""}>Activo</option><option ${statusFilter === "Resuelto" ? "selected" : ""}>Resuelto</option></select></div>
+            ${reports.length ? `<div class="table-wrap"><table><thead><tr><th>Situación</th><th>Fecha</th>${user.role === "administrador" ? "<th>Persona</th>" : ""}<th>Prioridad</th><th>Estado</th>${user.role === "administrador" ? "<th>Acciones</th>" : ""}</tr></thead><tbody>${reports.map((report) => `<tr><td><span class="table-main">${escapeHtml(report.type)}</span><span class="table-sub">${escapeHtml(report.place)} · ${escapeHtml(report.description.slice(0, 70))}${report.description.length > 70 ? "…" : ""}</span></td><td>${formatDate(report.date)}</td>${user.role === "administrador" ? `<td>${escapeHtml(report.author || "Miembro")}</td>` : ""}<td>${priorityBadge(report.priority)}</td><td>${user.role === "administrador" ? `<select class="filter-select" data-status-id="${escapeHtml(report.id)}" aria-label="Estado de ${escapeHtml(report.type)}"><option ${report.status === "Pendiente" ? "selected" : ""}>Pendiente</option><option ${report.status === "Activo" ? "selected" : ""}>Activo</option><option ${report.status === "Resuelto" ? "selected" : ""}>Resuelto</option></select>` : statusBadge(report.status)}</td>${user.role === "administrador" ? `<td><button class="button button-quiet button-small" type="button" data-delete-report="${escapeHtml(report.id)}" aria-label="Eliminar registro">Eliminar</button></td>` : ""}</tr>`).join("")}</tbody></table></div>` : `<div class="empty-state"><span class="empty-icon">♡</span><strong>${searchTerm || statusFilter !== "all" ? "No hay resultados" : "Aún no hay situaciones"}</strong><span>${searchTerm || statusFilter !== "all" ? "Prueba cambiando los filtros." : "Cuando registres una situación podrás consultar su estado aquí."}</span></div>`}
+          </section>
+          ${user.role === "administrador" ? `<p class="privacy-note"><span aria-hidden="true">ⓘ</span><span>Los datos de este prototipo solo existen en el navegador actual; no cuentan con respaldos, control de acceso real ni cifrado de almacenamiento.</span></p>` : ""}`;
+      }
+      function opportunitiesView() {
+        return `${pageHeading("Oportunidades", "Recursos útiles para aprender, participar y encontrar orientación.")}<section class="opportunity-grid">${initialOpportunities.map((item) => `<article class="card opportunity-card"><span class="badge ${item.color === "pink" ? "badge-active" : item.color === "mint" ? "badge-resolved" : "badge-admin"}">${escapeHtml(item.tag)}</span><h3>${escapeHtml(item.title)}</h3><p>${escapeHtml(item.description)}</p><a class="button button-outline button-small" href="${escapeHtml(item.url)}" target="_blank" rel="noopener noreferrer">${escapeHtml(item.action)} ↗</a></article>`).join("")}</section>`;
+      }
+      function resourcesView() {
+        return `${pageHeading("Recursos de apoyo", "Información general para orientar conversaciones y buscar ayuda.")}<section class="opportunity-grid">
+          <article class="card opportunity-card"><span class="stat-icon icon-pink">♡</span><h3>Si necesitas orientación</h3><p>Busca los canales de atención oficiales de tu ciudad o institución. En una emergencia inmediata, contacta los servicios de emergencia locales.</p><a class="button button-outline button-small" href="https://www.policia.gov.co/patrulla-purpura" target="_blank" rel="noopener noreferrer">Información Colombia ↗</a></article>
+          <article class="card opportunity-card"><span class="stat-icon icon-lavender">✦</span><h3>ODS 5: igualdad de género</h3><p>Conoce los objetivos globales para alcanzar la igualdad y empoderar a todas las mujeres y niñas.</p><a class="button button-outline button-small" href="https://www.un.org/sustainabledevelopment/es/gender-equality/" target="_blank" rel="noopener noreferrer">Conocer el ODS 5 ↗</a></article>
+          <article class="card opportunity-card"><span class="stat-icon icon-mint">◎</span><h3>Cuida tu información</h3><p>Comparte solo lo necesario y usa canales oficiales. Este prototipo guarda lo que ingreses en el almacenamiento de este navegador.</p><span class="badge badge-resolved">Tu privacidad importa</span></article>
+        </section><p class="privacy-note"><span aria-hidden="true">ⓘ</span><span>Estos recursos son informativos. La disponibilidad de líneas y servicios depende de tu ubicación; verifica siempre los canales oficiales locales.</span></p>`;
+      }
+      function eventsView() {
+        return `${pageHeading("Fechas importantes", "Algunas fechas para conversar y actuar durante todo el año.")}<section class="card panel"><div class="event-list">${events.map((event) => `<article class="event-item"><div class="event-date"><span>${escapeHtml(event.month)}</span><strong>${escapeHtml(event.day)}</strong></div><div class="event-copy"><strong>${escapeHtml(event.title)}</strong><p>${escapeHtml(event.detail)}</p></div></article>`).join("")}</div></section>`;
+      }
+      function reportsView() {
+        if (getCurrentUser()?.role !== "administrador") return dashboardView();
+        const reports = getReports();
+        const categoryCounts = categories.map((category) => ({ category, count: reports.filter((report) => report.type === category).length }));
+        const maxCount = Math.max(1, ...categoryCounts.map((item) => item.count));
+        const statusCounts = ["Pendiente", "Activo", "Resuelto"].map((status) => reports.filter((report) => report.status === status).length);
+        const total = reports.length;
+        let position = 0;
+        const stops = statusCounts.map((count, index) => {
+          const colors = ["#a21c5a", "#e7bcce", "#bdb3df"];
+          const start = position;
+          position += total ? count / total * 100 : index === 0 ? 100 : 0;
+          return `${colors[index]} ${start}% ${position}%`;
+        });
+        return `${pageHeading("Reportes", "Una vista general de las situaciones registradas localmente.")}<section class="reports-grid">
+          <article class="card panel"><div class="panel-header"><div><h3>Casos por categoría</h3><p>${total} ${total === 1 ? "reporte registrado" : "reportes registrados"}</p></div></div><div class="chart" role="img" aria-label="Gráfico de casos por categoría">${categoryCounts.map((item) => `<div class="chart-row"><span class="chart-label">${escapeHtml(item.category)}</span><div class="chart-track"><div class="chart-bar" style="width:${Math.max(item.count ? 6 : 0, item.count / maxCount * 100)}%"></div></div><span class="chart-number">${item.count}</span></div>`).join("")}</div></article>
+          <article class="card panel"><div class="panel-header"><div><h3>Estado de los casos</h3><p>Distribución actual</p></div></div><div class="donut-wrap"><div class="donut" style="background:conic-gradient(${stops.join(",")})"><div class="donut-center"><strong>${total}</strong><span>situaciones</span></div></div></div><div class="legend">${["Pendiente", "Activo", "Resuelto"].map((status, index) => `<div class="legend-row"><span class="legend-dot ${index === 1 ? "pink" : index === 2 ? "lavender" : ""}"></span>${status}<strong style="margin-left:auto;color:var(--ink)">${statusCounts[index]}</strong></div>`).join("")}</div></article>
+        </section><p class="privacy-note"><span aria-hidden="true">ⓘ</span><span>Este reporte resume exclusivamente los datos de demostración almacenados en este navegador.</span></p>`;
+      }
+      function render() {
+        const user = getCurrentUser();
+        if (!user) {
+          authView();
+          return;
+        }
+        const pages = {
+          dashboard: dashboardView,
+          register: registerView,
+          "reports-list": reportsListView,
+          opportunities: opportunitiesView,
+          resources: resourcesView,
+          events: eventsView,
+          reports: reportsView
+        };
+        if (currentPage === "reports" && user.role !== "administrador") currentPage = "dashboard";
+        shellView((pages[currentPage] || dashboardView)());
+      }
+      function setAuthMode(mode) {
+        authMode = mode === "register" ? "register" : "login";
+        authView();
+      }
+      function updatePasswordStrength(password) {
+        const meter = document.getElementById("password-strength");
+        if (!meter) return;
+        let score = 0;
+        if (password.length >= 8) score += 1;
+        if (password.length >= 12) score += 1;
+        if (/[a-z]/.test(password) && /[A-Z]/.test(password)) score += 1;
+        if (/\d/.test(password) || /[^A-Za-z0-9]/.test(password)) score += 1;
+        const labels = ["Usa al menos 8 caracteres.", "Débil", "Aceptable", "Buena", "Muy buena"];
+        meter.dataset.level = String(score);
+        meter.querySelector(".strength-caption").textContent = password ? labels[score] : labels[0];
+      }
+      function handleAuthSubmit(form) {
+        const message = document.getElementById("auth-message");
+        clearInlineMessage(message);
+        const data = new FormData(form);
+        const email = String(data.get("email") || "").trim().toLowerCase();
+        const password = String(data.get("password") || "");
+        if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+          setInlineMessage(message, "Escribe un correo electrónico válido.");
+          form.elements.email.focus();
+          return;
+        }
+        if (authMode === "register") {
+          const name = String(data.get("name") || "").trim();
+          if (name.length < 2) {
+            setInlineMessage(message, "Escribe tu nombre (al menos 2 caracteres).");
+            form.elements.name.focus();
+            return;
+          }
+          if (password.length < 8) {
+            setInlineMessage(message, "La contraseña debe tener al menos 8 caracteres.");
+            form.elements.password.focus();
+            return;
+          }
+          if (email === adminDemo.email || getUsers().some((user) => user.email === email)) {
+            setInlineMessage(message, "Ya existe una cuenta con ese correo. Inicia sesión.");
+            form.elements.email.focus();
+            return;
+          }
+          const user = { id: `user-${Date.now()}-${Math.random().toString(16).slice(2)}`, name, email, password, role: "usuario" };
+          const users = getUsers();
+          users.push(user);
+          if (!writeStorage(STORAGE.users, users) || !writeStorage(STORAGE.session, { id: user.id, email: user.email })) return;
+          currentPage = "dashboard";
+          render();
+          showToast("Tu cuenta se creó correctamente. ¡Bienvenida!");
+          return;
+        }
+        const user = email === adminDemo.email ? adminDemo : getUsers().find((item) => item.email === email);
+        if (!user || user.password !== password) {
+          setInlineMessage(message, "El correo o la contraseña no coinciden.");
+          form.elements.password.focus();
+          return;
+        }
+        if (!writeStorage(STORAGE.session, { id: user.id, email: user.email })) return;
+        currentPage = "dashboard";
+        render();
+        showToast(`Bienvenida${user.role === "administrador" ? ", administradora" : ""}.`);
+      }
+      function handleReportSubmit(form) {
+        const message = document.getElementById("report-message");
+        clearInlineMessage(message);
+        const data = new FormData(form);
+        const type = String(data.get("type") || "");
+        const date = String(data.get("date") || "");
+        const place = String(data.get("place") || "").trim();
+        const priority = String(data.get("priority") || "");
+        const description = String(data.get("description") || "").trim();
+        const maxDate = new Date().toISOString().slice(0, 10);
+        if (!categories.includes(type)) return setInlineMessage(message, "Selecciona un tipo de situación.");
+        if (!date || date > maxDate) return setInlineMessage(message, "Selecciona una fecha válida que no sea futura.");
+        if (place.length < 2) return setInlineMessage(message, "Escribe el lugar (al menos 2 caracteres).");
+        if (!["Baja", "Media", "Alta"].includes(priority)) return setInlineMessage(message, "Selecciona el nivel de prioridad.");
+        if (description.length < 15) return setInlineMessage(message, "Describe la situación con al menos 15 caracteres.");
+        const user = getCurrentUser();
+        const report = {
+          id: `report-${Date.now()}-${Math.random().toString(16).slice(2)}`,
+          userId: user.id,
+          author: user.name,
+          type, date, place, priority, description,
+          status: "Pendiente",
+          createdAt: new Date().toISOString().slice(0, 10)
+        };
+        const reports = getReports();
+        reports.push(report);
+        if (!writeStorage(STORAGE.reports, reports)) return;
+        currentPage = "reports-list";
+        render();
+        showToast("La situación quedó guardada en este navegador.");
+      }
+      function changeStatus(reportId, status) {
+        if (!["Pendiente", "Activo", "Resuelto"].includes(status)) return;
+        const reports = getReports();
+        const report = reports.find((item) => item.id === reportId);
+        if (!report) return;
+        report.status = status;
+        if (writeStorage(STORAGE.reports, reports)) {
+          render();
+          showToast("Estado actualizado.");
+        }
+      }
+      function confirmAction(title, description) {
+        return new Promise((resolve) => {
+          const backdrop = document.createElement("div");
+          backdrop.className = "confirm-backdrop";
+          backdrop.innerHTML = `<section class="confirm-dialog" role="alertdialog" aria-modal="true" aria-labelledby="confirm-title" aria-describedby="confirm-description" tabindex="-1"><h2 id="confirm-title">${escapeHtml(title)}</h2><p id="confirm-description">${escapeHtml(description)}</p><div class="confirm-actions"><button class="button button-outline" type="button" data-confirm="cancel">Cancelar</button><button class="button button-danger" type="button" data-confirm="accept">Eliminar</button></div></section>`;
+          document.body.appendChild(backdrop);
+          const dialog = backdrop.querySelector(".confirm-dialog");
+          const cancel = backdrop.querySelector('[data-confirm="cancel"]');
+          const accept = backdrop.querySelector('[data-confirm="accept"]');
+          let finished = false;
+          const finish = (result) => {
+            if (finished) return;
+            finished = true;
+            document.removeEventListener("keydown", onKeyDown);
+            backdrop.remove();
+            resolve(result);
+          };
+          const onKeyDown = (event) => {
+            if (event.key === "Escape") finish(false);
+            if (event.key === "Tab") {
+              event.preventDefault();
+              (document.activeElement === cancel ? accept : cancel).focus();
+            }
+          };
+          cancel.addEventListener("click", () => finish(false));
+          accept.addEventListener("click", () => finish(true));
+          backdrop.addEventListener("click", (event) => {
+            if (event.target === backdrop) finish(false);
+          });
+          document.addEventListener("keydown", onKeyDown);
+          cancel.focus();
+        });
+      }
+      async function deleteReport(reportId) {
+        if (getCurrentUser()?.role !== "administrador") return;
+        const reports = getReports();
+        if (!reports.some((report) => report.id === reportId)) return;
+        const confirmed = await confirmAction("¿Eliminar este registro?", "Se quitará del almacenamiento de este navegador. Esta acción no se puede deshacer.");
+        if (!confirmed) return;
+        if (writeStorage(STORAGE.reports, reports.filter((report) => report.id !== reportId))) {
+          render();
+          showToast("Registro eliminado del prototipo.");
+        }
+      }
+      function exportReports() {
+        if (getCurrentUser()?.role !== "administrador") return;
+        const rows = getReports();
+        const headers = ["Tipo", "Fecha", "Lugar", "Prioridad", "Estado", "Persona", "Descripción"];
+        const quote = (value) => `"${String(value ?? "").replace(/"/g, '""')}"`;
+        const csv = [headers, ...rows.map((report) => [report.type, report.date, report.place, report.priority, report.status, report.author, report.description])]
+          .map((row) => row.map(quote).join(",")).join("\r\n");
+        const blob = new Blob(["\uFEFF" + csv], { type: "text/csv;charset=utf-8" });
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement("a");
+        link.href = url;
+        link.download = "equigenero-prototipo-reportes.csv";
+        link.click();
+        URL.revokeObjectURL(url);
+        showToast("Se descargó el archivo CSV.");
+      }
+      function navigate(page) {
+        const user = getCurrentUser();
+        if (!user) return;
+        if (page === "reports" && user.role !== "administrador") {
+          showToast("Los reportes generales son exclusivos de la administradora.", "error");
+          return;
+        }
+        currentPage = page;
+        mobileNavOpen = false;
+        render();
+        window.scrollTo({ top: 0, behavior: "smooth" });
+      }
+
+      document.addEventListener("click", (event) => {
+        const authTab = event.target.closest("[data-auth-mode]");
+        if (authTab) return setAuthMode(authTab.dataset.authMode);
+        const nav = event.target.closest("[data-page]");
+        if (nav) {
+          event.preventDefault();
+          return navigate(nav.dataset.page);
+        }
+        const action = event.target.closest("[data-action]");
+        if (action?.dataset.action === "logout") {
+          localStorage.removeItem(STORAGE.session);
+          currentPage = "dashboard";
+          authMode = "login";
+          mobileNavOpen = false;
+          render();
+          showToast("Cerraste la sesión de este prototipo.");
+        }
+        if (action?.dataset.action === "menu") {
+          mobileNavOpen = !mobileNavOpen;
+          render();
+        }
+        if (action?.dataset.action === "export") exportReports();
+        if (action?.dataset.action === "toggle-password") {
+          const input = document.getElementById(action.getAttribute("aria-controls"));
+          const visible = input.type === "password";
+          input.type = visible ? "text" : "password";
+          action.textContent = visible ? "Ocultar" : "Mostrar";
+          action.setAttribute("aria-pressed", String(visible));
+        }
+        const deleteButton = event.target.closest("[data-delete-report]");
+        if (deleteButton) deleteReport(deleteButton.dataset.deleteReport);
+        if (event.target.id === "mobile-overlay") {
+          mobileNavOpen = false;
+          render();
+        }
+      });
+      document.addEventListener("submit", (event) => {
+        if (event.target.id === "auth-form") {
+          event.preventDefault();
+          handleAuthSubmit(event.target);
+        }
+        if (event.target.id === "report-form") {
+          event.preventDefault();
+          handleReportSubmit(event.target);
+        }
+      });
+      document.addEventListener("input", (event) => {
+        if (event.target.id === "auth-password") updatePasswordStrength(event.target.value);
+        if (event.target.id === "report-search") {
+          const selection = event.target.selectionStart;
+          searchTerm = event.target.value;
+          render();
+          const input = document.getElementById("report-search");
+          input.focus();
+          input.setSelectionRange(selection, selection);
+        }
+      });
+      document.addEventListener("change", (event) => {
+        if (event.target.id === "status-filter") {
+          statusFilter = event.target.value;
+          render();
+        }
+        if (event.target.matches("[data-status-id]")) changeStatus(event.target.dataset.statusId, event.target.value);
+      });
+
+      render();
+    })();
+  </script>
+</body>
+</html>

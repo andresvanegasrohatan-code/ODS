@@ -1,0 +1,74 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  color-scheme: light;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+@layer base {
+  body {
+    @apply bg-cream font-sans text-ink antialiased;
+  }
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    @apply font-display font-semibold;
+  }
+}
+
+@layer components {
+  .btn {
+    @apply inline-flex items-center justify-center rounded-full px-5 py-2.5 text-sm font-semibold transition duration-200 active:scale-95 disabled:cursor-not-allowed disabled:opacity-60;
+  }
+  .btn-primary {
+    @apply bg-brand text-white shadow-soft hover:bg-brand-dark;
+  }
+  .btn-outline {
+    @apply border-[1.5px] border-brand bg-transparent text-brand hover:bg-brand-tint;
+  }
+  .btn-outline-light {
+    @apply border border-white/30 bg-white/10 text-white backdrop-blur-sm hover:bg-white/15;
+  }
+  .btn-ghost {
+    @apply bg-transparent text-ink-soft hover:text-ink;
+  }
+  .btn-sm {
+    @apply px-4 py-2 text-xs;
+  }
+  .label {
+    @apply mb-1.5 block text-xs font-semibold text-ink-soft;
+  }
+  .input {
+    @apply w-full rounded-[12px] border-[1.5px] border-line bg-[#FEFCFB] px-3.5 py-3 text-sm text-ink outline-none transition focus:border-brand focus:ring-2 focus:ring-brand/25;
+  }
+  .card {
+    @apply rounded-2xl border border-line bg-white p-6;
+  }
+  .pill-tag {
+    @apply inline-flex items-center gap-2 rounded-full border border-brand/30 bg-brand-tint px-3 py-1.5 text-[11px] font-bold uppercase tracking-[0.2em] text-brand-dark;
+  }
+  .hero-panel {
+    position: relative;
+    overflow: hidden;
+    border-radius: 32px;
+    border: 1px solid rgba(120, 72, 102, 0.18);
+    background-image: linear-gradient(115deg, rgba(51, 20, 50, 0.9), rgba(111, 24, 72, 0.78) 52%, rgba(58, 43, 91, 0.58)),
+      url('https://images.unsplash.com/photo-1529156069898-49953e39b3ac?auto=format&fit=crop&w=1600&q=80');
+    background-size: cover;
+    background-position: center;
+    box-shadow: 0 24px 55px -34px rgba(69, 27, 54, 0.65);
+  }
+  .hero-content {
+    position: relative;
+    z-index: 1;
+    padding: clamp(1.5rem, 3vw, 3.5rem);
+  }
+}

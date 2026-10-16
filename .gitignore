@@ -1,0 +1,18 @@
+node_modules/
+dist/
+build/
+
+# Variables de entorno (NUNCA subir secretos)
+.env
+.env.local
+.env.production
+
+# Base de datos local
+*.sqlite
+*.sqlite3
+
+# Logs y sistema
+npm-debug.log*
+.DS_Store
+.vscode/
+.idea/
