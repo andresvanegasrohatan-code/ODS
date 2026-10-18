@@ -1,7 +1,4 @@
-// Punto de entrada serverless para Vercel: reutiliza la app Express de /server
-// (todas las rutas /api/* se redirigen aquí desde vercel.json).
-const app = require('../server/src/app');
-const { sequelize } = require('../server/src/models');
+// Punto de entrada serverless para Vercel: reutiliza la app Express de /server.
 
 function restaurarRutaApi(req) {
   const url = new URL(req.url, `https://${req.headers.host || 'localhost'}`);
@@ -14,29 +11,25 @@ function restaurarRutaApi(req) {
   req.url = `/api/${ruta}${consulta ? `?${consulta}` : ''}`;
 }
 
-// La conexión y la sincronización se hacen una sola vez por instancia en frío.
+// La conexión se reutiliza por instancia; las migraciones se ejecutan por separado.
 let listo;
-function prepararBaseDeDatos() {
-  if (!listo) {
-    listo = sequelize
-      .authenticate()
-      .then(() => sequelize.sync())
-      .catch((error) => {
-        listo = undefined; // permite reintentar en la siguiente petición
-        throw error;
-      });
-  }
-  return listo;
-}
-
 module.exports = async (req, res) => {
   restaurarRutaApi(req);
 
   try {
-    await prepararBaseDeDatos();
+    const app = require('../server/src/app');
+    const { sequelize } = require('../server/src/models');
+
+    if (!listo) {
+      listo = sequelize.authenticate().catch((error) => {
+        listo = undefined;
+        throw error;
+      });
+    }
+    await listo;
+    return app(req, res);
   } catch (error) {
-    console.error('No se pudo conectar a la base de datos:', error.message);
-    return res.status(503).json({ mensaje: 'Base de datos no disponible' });
+    console.error('No se pudo iniciar la API o conectar a la base de datos:', error.message);
+    return res.status(503).json({ mensaje: 'El servicio no está disponible temporalmente' });
   }
-  return app(req, res);
 };

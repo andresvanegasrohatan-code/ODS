@@ -26,11 +26,25 @@ if (dialect === 'postgres') {
     throw new Error('DB_PORT debe ser un puerto válido entre 1 y 65535');
   }
 
+  let dialectOptions = {};
+  if (process.env.DB_SSL === 'true') {
+    if (!process.env.DB_SSL_CA) {
+      throw new Error('DB_SSL=true requiere definir el certificado CA de MySQL en DB_SSL_CA');
+    }
+    dialectOptions = {
+      ssl: {
+        ca: process.env.DB_SSL_CA.replace(/\\n/g, '\n'),
+        rejectUnauthorized: true,
+      },
+    };
+  }
+
   sequelize = new Sequelize(process.env.DB_NAME, process.env.DB_USER, process.env.DB_PASSWORD || '', {
     dialect: 'mysql',
     dialectModule: require('mysql2'), // necesario para empaquetar en Vercel
     host: process.env.DB_HOST || 'localhost',
     port,
+    dialectOptions,
     logging: false,
   });
 } else if (dialect === 'sqlite') {
