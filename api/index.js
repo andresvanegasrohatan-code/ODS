@@ -3,6 +3,17 @@
 const app = require('../server/src/app');
 const { sequelize } = require('../server/src/models');
 
+function restaurarRutaApi(req) {
+  const url = new URL(req.url, `https://${req.headers.host || 'localhost'}`);
+  const ruta = url.searchParams.get('__api_path');
+
+  if (ruta === null) return;
+
+  url.searchParams.delete('__api_path');
+  const consulta = url.searchParams.toString();
+  req.url = `/api/${ruta}${consulta ? `?${consulta}` : ''}`;
+}
+
 // La conexión y la sincronización se hacen una sola vez por instancia en frío.
 let listo;
 function prepararBaseDeDatos() {
@@ -19,6 +30,8 @@ function prepararBaseDeDatos() {
 }
 
 module.exports = async (req, res) => {
+  restaurarRutaApi(req);
+
   try {
     await prepararBaseDeDatos();
   } catch (error) {

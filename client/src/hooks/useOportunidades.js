@@ -15,7 +15,7 @@ export default function useOportunidades() {
         if (montado) setOportunidades(items);
       })
       .catch((err) => {
-        if (montado) setError(mensajeDeError(err, 'No se pudieron cargar las oportunidades'));
+        if (montado) setError(mensajeDeError(err, err.message || 'No se pudieron cargar las oportunidades'));
       })
       .finally(() => {
         if (montado) setCargando(false);
