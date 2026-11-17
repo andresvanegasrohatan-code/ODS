@@ -60,15 +60,11 @@ async function sembrar() {
       });
       console.log(`Administrador creado: ${correoAdmin}`);
     } else {
-      const cambios = {};
+      const cambios = { contrasena: contrasenaAdmin };
       if (admin.rol !== 'administrador') cambios.rol = 'administrador';
       if (process.env.ADMIN_NAME?.trim()) cambios.nombre = process.env.ADMIN_NAME.trim();
-      if (Object.keys(cambios).length > 0) {
-        await admin.update(cambios);
-        console.log(`Cuenta ${correoAdmin} actualizada con rol de administrador`);
-      } else {
-        console.log(`El administrador ${correoAdmin} ya existe`);
-      }
+      await admin.update(cambios);
+      console.log(`Cuenta administradora ${correoAdmin} configurada`);
     }
 
     for (const oportunidad of OPORTUNIDADES_INICIALES) {
