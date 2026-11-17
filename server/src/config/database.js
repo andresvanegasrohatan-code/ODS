@@ -20,6 +20,7 @@ if (dialect === 'postgres') {
     throw new Error('DB_DIALECT=mysql requiere definir DB_NAME y DB_USER en el archivo .env');
   }
 
+  const mysql2 = require('mysql2');
   const port = Number(process.env.DB_PORT || 3306);
   if (!Number.isInteger(port) || port < 1 || port > 65535) {
     throw new Error('DB_PORT debe ser un puerto válido entre 1 y 65535');
@@ -40,6 +41,7 @@ if (dialect === 'postgres') {
 
   sequelize = new Sequelize(process.env.DB_NAME, process.env.DB_USER, process.env.DB_PASSWORD || '', {
     dialect: 'mysql',
+    dialectModule: mysql2,
     host: process.env.DB_HOST || 'localhost',
     port,
     dialectOptions,
