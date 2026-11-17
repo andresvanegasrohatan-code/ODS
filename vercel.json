@@ -2,6 +2,11 @@
   "installCommand": "npm run install:all",
   "buildCommand": "npm run build",
   "outputDirectory": "client/dist",
+  "functions": {
+    "api/[...path].js": {
+      "includeFiles": "server/node_modules/mysql2/**/*"
+    }
+  },
   "rewrites": [
     {
       "source": "/:path((?!api/).*)",
