@@ -5,6 +5,9 @@
   "functions": {
     "api/[...path].js": {
       "includeFiles": "server/node_modules/mysql2/**/*"
+    },
+    "api/auth/[action].js": {
+      "includeFiles": "server/node_modules/mysql2/**/*"
     }
   },
   "rewrites": [
