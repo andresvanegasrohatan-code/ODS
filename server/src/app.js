@@ -7,12 +7,11 @@ const authRoutes = require('./routes/authRoutes');
 const situacionRoutes = require('./routes/situacionRoutes');
 const reporteRoutes = require('./routes/reporteRoutes');
 const oportunidadRoutes = require('./routes/oportunidadRoutes');
+const casoRoutes = require('./routes/casoRoutes');
+const llaveOrganizacionRoutes = require('./routes/llaveOrganizacionRoutes');
 const { noEncontrado, manejarErrores } = require('./middleware/errorHandler');
 
 const app = express();
-
-// Detrás del proxy de Vercel/Render: necesario para el limitador de peticiones
-app.set('trust proxy', 1);
 
 const origenesPermitidos = (process.env.CLIENT_URL || 'http://localhost:5173')
   .split(',')
@@ -26,13 +25,15 @@ app.use(
     allowedHeaders: ['Content-Type', 'Authorization'],
   })
 );
-app.use(express.json({ limit: '1mb' }));
+app.use(express.json({ limit: '5mb' }));
 
 app.get('/api/health', (req, res) => res.json({ estado: 'ok', servicio: 'EquiGénero API' }));
 app.use('/api/auth', authRoutes);
 app.use('/api/situaciones', situacionRoutes);
 app.use('/api/reportes', reporteRoutes);
 app.use('/api/oportunidades', oportunidadRoutes);
+app.use('/api/casos', casoRoutes);
+app.use('/api/llaves-organizacion', llaveOrganizacionRoutes);
 
 if (process.env.NODE_ENV === 'production') {
   const clientDist = path.resolve(__dirname, '../../client/dist');

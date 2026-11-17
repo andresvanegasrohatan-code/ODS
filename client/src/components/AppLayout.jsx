@@ -1,5 +1,6 @@
 import { NavLink, Outlet, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import SalidaRapida from './SalidaRapida';
 
 const MENU_USUARIO = [
   { to: '/app', etiqueta: 'Inicio', icono: '🏠', end: true },
@@ -15,6 +16,8 @@ const MENU_ADMIN = [
   { to: '/app/educacion', etiqueta: 'Contenidos', icono: '📘' },
   { to: '/app/oportunidades', etiqueta: 'Oportunidades', icono: '🎓' },
   { to: '/app/reportes', etiqueta: 'Reportes', icono: '📊' },
+  { to: '/app/casos-anonimos', etiqueta: 'Denuncias anónimas', icono: '🛡️' },
+  { to: '/app/llaves', etiqueta: 'Llaves', icono: '🔐' },
 ];
 
 export default function AppLayout() {
@@ -70,6 +73,7 @@ export default function AppLayout() {
             </span>
 
             <div className="flex items-center gap-3 text-sm text-ink-soft">
+              <SalidaRapida limpiar={logout} />
               <span className="hidden sm:inline">{usuario.nombre}</span>
               <div className="grid h-9 w-9 place-items-center rounded-full bg-gradient-to-br from-brand-tint to-[#e7dfff] text-sm font-bold text-brand-dark shadow-soft">
                 {usuario.nombre.charAt(0).toUpperCase()}

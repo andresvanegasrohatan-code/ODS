@@ -1,6 +1,7 @@
 # Base de datos de EquiGénero
 
 El esquema sigue los modelos Sequelize del backend y está preparado para MySQL 8 con InnoDB y `utf8mb4`.
+Para conectar el backend a un MySQL remoto como Aiven, configura `DB_SSL=true` y el contenido del certificado CA entregado por el proveedor en `DB_SSL_CA`; la API valida el certificado TLS del servidor.
 
 ## Archivos
 

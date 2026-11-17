@@ -9,33 +9,34 @@ export function AuthProvider({ children }) {
   const [cargando, setCargando] = useState(true);
 
   useEffect(() => {
-    const token = localStorage.getItem(TOKEN_KEY);
+    localStorage.removeItem(TOKEN_KEY);
+    const token = sessionStorage.getItem(TOKEN_KEY);
     if (!token) {
       setCargando(false);
       return;
     }
     obtenerPerfil()
       .then(setUsuario)
-      .catch(() => localStorage.removeItem(TOKEN_KEY))
+      .catch(() => sessionStorage.removeItem(TOKEN_KEY))
       .finally(() => setCargando(false));
   }, []);
 
   const login = useCallback(async (credenciales) => {
     const { usuario: u, token } = await iniciarSesion(credenciales);
-    localStorage.setItem(TOKEN_KEY, token);
+    sessionStorage.setItem(TOKEN_KEY, token);
     setUsuario(u);
     return u;
   }, []);
 
   const registrar = useCallback(async (datos) => {
     const { usuario: u, token } = await registrarUsuario(datos);
-    localStorage.setItem(TOKEN_KEY, token);
+    sessionStorage.setItem(TOKEN_KEY, token);
     setUsuario(u);
     return u;
   }, []);
 
   const logout = useCallback(() => {
-    localStorage.removeItem(TOKEN_KEY);
+    sessionStorage.removeItem(TOKEN_KEY);
     setUsuario(null);
   }, []);
 

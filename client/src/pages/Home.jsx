@@ -20,6 +20,13 @@ const SERVICIOS = [
     href: '/acceso',
   },
   {
+    icono: '🔒',
+    titulo: 'Denuncia anónima',
+    texto: 'Reporta sin cuenta, cifrado en el navegador y seguimiento con código + frase secreta.',
+    fondo: 'bg-violet-tint text-violet',
+    href: '/denuncia-anonima',
+  },
+  {
     icono: '🎓',
     titulo: 'Oportunidades',
     texto: 'Consulta eventos, capacitaciones y actividades sobre equidad.',

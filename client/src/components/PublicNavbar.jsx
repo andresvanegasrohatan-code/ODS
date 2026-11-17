@@ -1,8 +1,14 @@
 import { Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import SalidaRapida from './SalidaRapida';
 
-export default function PublicNavbar() {
-  const { usuario } = useAuth();
+export default function PublicNavbar({ onSalidaRapida }) {
+  const { usuario, logout } = useAuth();
+
+  function limpiarSesionPublica() {
+    logout();
+    onSalidaRapida?.();
+  }
 
   return (
     <header className="border-b border-line bg-[#f7f2ee]/90 backdrop-blur-sm">
@@ -30,17 +36,23 @@ export default function PublicNavbar() {
           <a href="#oportunidades" className="text-ink-soft transition hover:text-brand-dark">
             Oportunidades
           </a>
+          <Link to="/denuncia-anonima" className="text-ink-soft transition hover:text-brand-dark">
+            Denuncia anónima
+          </Link>
         </nav>
 
-        {usuario ? (
-          <Link to="/app" className="btn btn-primary btn-sm">
-            Ir a mi panel
-          </Link>
-        ) : (
-          <Link to="/acceso" className="btn btn-primary btn-sm">
-            Entrar
-          </Link>
-        )}
+        <div className="flex items-center gap-2">
+          <SalidaRapida limpiar={limpiarSesionPublica} />
+          {usuario ? (
+            <Link to="/app" className="btn btn-primary btn-sm">
+              Ir a mi panel
+            </Link>
+          ) : (
+            <Link to="/acceso" className="btn btn-primary btn-sm">
+              Entrar
+            </Link>
+          )}
+        </div>
       </div>
     </header>
   );

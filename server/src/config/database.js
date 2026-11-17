@@ -9,7 +9,6 @@ if (dialect === 'postgres') {
   }
   sequelize = new Sequelize(process.env.DATABASE_URL, {
     dialect: 'postgres',
-    dialectModule: require('pg'), // necesario para empaquetar en Vercel
     logging: false,
     dialectOptions:
       process.env.DB_SSL === 'true'
@@ -41,7 +40,6 @@ if (dialect === 'postgres') {
 
   sequelize = new Sequelize(process.env.DB_NAME, process.env.DB_USER, process.env.DB_PASSWORD || '', {
     dialect: 'mysql',
-    dialectModule: require('mysql2'), // necesario para empaquetar en Vercel
     host: process.env.DB_HOST || 'localhost',
     port,
     dialectOptions,

@@ -9,7 +9,7 @@ const api = axios.create({
 
 // Adjunta el token JWT a cada petición hacia rutas protegidas
 api.interceptors.request.use((config) => {
-  const token = localStorage.getItem(TOKEN_KEY);
+  const token = sessionStorage.getItem(TOKEN_KEY);
   if (token) {
     config.headers.Authorization = `Bearer ${token}`;
   }
@@ -23,7 +23,7 @@ api.interceptors.response.use(
     const url = error.config?.url || '';
     const esRutaAuth = url.includes('/auth/login') || url.includes('/auth/register');
     if (error.response?.status === 401 && !esRutaAuth) {
-      localStorage.removeItem(TOKEN_KEY);
+      sessionStorage.removeItem(TOKEN_KEY);
       if (window.location.pathname !== '/acceso') {
         window.location.href = '/acceso';
       }
