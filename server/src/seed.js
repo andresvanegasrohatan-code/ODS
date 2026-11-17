@@ -37,22 +37,38 @@ const OPORTUNIDADES_INICIALES = [
 
 async function sembrar() {
   try {
+    const correoAdmin = process.env.ADMIN_EMAIL?.trim().toLowerCase();
+    const contrasenaAdmin = process.env.ADMIN_PASSWORD;
+    if (!correoAdmin || !contrasenaAdmin) {
+      throw new Error('Define ADMIN_EMAIL y ADMIN_PASSWORD antes de ejecutar el seed');
+    }
+    if (contrasenaAdmin.length < 12) {
+      throw new Error('ADMIN_PASSWORD debe tener al menos 12 caracteres');
+    }
+
     await sequelize.authenticate();
     await sequelize.sync();
 
-    const correoAdmin = (process.env.ADMIN_EMAIL || 'admin@equigenero.com').toLowerCase();
     let admin = await Usuario.findOne({ where: { correo: correoAdmin } });
 
     if (!admin) {
       admin = await Usuario.create({
         nombre: process.env.ADMIN_NAME || 'Administrador',
         correo: correoAdmin,
-        contrasena: process.env.ADMIN_PASSWORD || 'Admin12345!',
+        contrasena: contrasenaAdmin,
         rol: 'administrador',
       });
       console.log(`Administrador creado: ${correoAdmin}`);
     } else {
-      console.log(`El administrador ${correoAdmin} ya existe`);
+      const cambios = {};
+      if (admin.rol !== 'administrador') cambios.rol = 'administrador';
+      if (process.env.ADMIN_NAME?.trim()) cambios.nombre = process.env.ADMIN_NAME.trim();
+      if (Object.keys(cambios).length > 0) {
+        await admin.update(cambios);
+        console.log(`Cuenta ${correoAdmin} actualizada con rol de administrador`);
+      } else {
+        console.log(`El administrador ${correoAdmin} ya existe`);
+      }
     }
 
     for (const oportunidad of OPORTUNIDADES_INICIALES) {

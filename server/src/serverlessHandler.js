@@ -24,7 +24,6 @@ module.exports = async function handleApiRequest(req, res) {
   try {
     loadApi();
     await ensureDatabaseConnection();
-    await sequelize.sync();
     return app(req, res);
   } catch (error) {
     console.error('No se pudo inicializar la API o conectar con la base de datos:', error);
