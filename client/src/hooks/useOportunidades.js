@@ -12,7 +12,7 @@ export default function useOportunidades() {
 
     listarOportunidades()
       .then((items) => {
-        if (montado) setOportunidades(items);
+        if (montado) setOportunidades(Array.isArray(items) ? items : []);
       })
       .catch((err) => {
         if (montado) setError(mensajeDeError(err, 'No se pudieron cargar las oportunidades'));
