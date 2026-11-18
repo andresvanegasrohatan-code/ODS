@@ -8,6 +8,18 @@
     },
     "api/auth/[action].js": {
       "includeFiles": "server/node_modules/mysql2/**/*"
+    },
+    "api/casos/[...path].js": {
+      "includeFiles": "server/node_modules/mysql2/**/*"
+    },
+    "api/llaves-organizacion/[...path].js": {
+      "includeFiles": "server/node_modules/mysql2/**/*"
+    },
+    "api/reportes/[...path].js": {
+      "includeFiles": "server/node_modules/mysql2/**/*"
+    },
+    "api/situaciones/[...path].js": {
+      "includeFiles": "server/node_modules/mysql2/**/*"
     }
   },
   "rewrites": [
